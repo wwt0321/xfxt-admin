@@ -1,8 +1,8 @@
 const routes = [
   {
-    path: "/",
-    component: () => import("layouts/LayoutMain.vue"),
-    children: [{ path: "", component: () => import("pages/Index.vue") }]
+    path: '/',
+    component: () => import('layouts/LayoutNone.vue'),
+    children: [{ path: '', component: () => import('pages/PageIndex.vue') }],
   },
   // {
   //   path: '/',
@@ -14,9 +14,9 @@ const routes = [
   // Always leave this as last one,
   // but you can also remove it
   {
-    path: "*",
-    component: () => import("pages/Error404.vue")
-  }
+    path: '*',
+    component: () => import('pages/Error404.vue'),
+  },
 ];
 
 export default routes;
