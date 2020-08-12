@@ -2,7 +2,8 @@
   "src/pages/Page*.vue": { "type": "p" },
   "src/layouts/*Layout.vue": { "type": "l" },
   "src/forms/Form*.vue": { "type": "f" },
-  "src/mixins/*.js": { "type": "m" },
   "src/router/routes.js": { "type": "r" },
-  "src/boot/.js": { "type": "b" }
+  "src/boot/.js": { "type": "b" },
+  "src/mixins/*.js": { "type": "m" },
+  "src/graphqls/*.js": { "type": "g" }
 }
