@@ -3,19 +3,47 @@
   <head>
     <title><%= productName %></title>
 
-    <meta charset="utf-8">
-    <meta name="description" content="<%= productDescription %>">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>">
+    <meta charset="utf-8" />
+    <meta name="description" content="<%= productDescription %>" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta
+      name="viewport"
+      content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>"
+    />
 
-    <link rel="icon" type="image/png" sizes="128x128" href="icons/favicon-128x128.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
-    <link rel="icon" type="image/ico" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="128x128" href="icons/favicon-128x128.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
+    <link rel="icon" type="image/ico" href="favicon.ico" />
   </head>
   <body>
+    <!-- 增加检测全局语法错误的脚本，此检测仅针对近现代浏览器，古代浏览器需要在服务器端直接排除 -->
+    <script>
+      window.onerror = function (msg, url, lineNo, columnNo, error) {
+        var tip = '我们可能遇到了一些兼容性问题，请将本弹窗内容截图发送给开发人员以便排查';
+        var ua = window.navigator.userAgent;
+        var string = msg.toLowerCase();
+        var substring = 'script error';
+        if (string.indexOf(substring) > -1) {
+          alert('第三方脚本错误');
+        } else {
+          var message = [
+            '错误信息: ' + msg,
+            '文件地址: ' + url,
+            '行: ' + lineNo,
+            '列: ' + columnNo,
+            '错误: ' + JSON.stringify(error),
+          ].join(' - ');
+
+          alert([tip, ua, message].join('\n========\n'));
+        }
+
+        return false;
+      };
+    </script>
+
     <!-- DO NOT touch the following DIV -->
     <div id="q-app"></div>
   </body>
