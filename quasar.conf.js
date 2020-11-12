@@ -6,7 +6,7 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
-module.exports = function (/* ctx */) {
+module.exports = function(/* ctx */) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
@@ -72,7 +72,7 @@ module.exports = function (/* ctx */) {
       proxy: {
         // @TODO
         '/graphql': {
-          target: 'http://www.nbyunyi.cn:8420',
+          target: 'https://www.zhengct.com',
           changeOrigin: true,
         },
       },

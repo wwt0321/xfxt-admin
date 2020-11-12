@@ -4,9 +4,9 @@
 
 <script>
 export default {
-  name: "LayoutMain",
+  name: 'LayoutNone',
   data() {
     return {};
-  }
+  },
 };
 </script>

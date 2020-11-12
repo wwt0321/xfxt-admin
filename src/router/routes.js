@@ -1,23 +1,21 @@
-import { helperGuard } from '../mixins/MixinTokenWechat.js';
-
-const guard = process.env.DEV
-  ? helperGuard('wx2cdfbcfbc6d5a939', 'http://127.0.0.1:7001', 'customer')
-  : helperGuard('wxb8914a29f4062f01', location.origin, 'customer');
+import { helperGuard } from '../mixins/MixinTokenAdmin.js';
 
 const routes = [
   {
-    path: '/auth/:code',
-    component: () => import('pages/PageAuth.vue'),
+    path: '/login',
+    component: () => import('pages/PageLogin.vue'),
   },
   {
     path: '/',
-    component: () => import('layouts/LayoutNone.vue'),
-    children: [{ path: '', component: () => import('pages/PageIndex.vue') }],
-    beforeEnter: guard,
+    component: () => import('layouts/LayoutAdmin.vue'),
+    children: [
+      { path: '', component: () => import('pages/PageIndex.vue') },
+      { path: '/dashboard', component: () => import('pages/PageIndex.vue') },
+      { path: '/iframe/:url', component: () => import('pages/PageIframe.vue') },
+      { path: '/metabase/:url', component: () => import('pages/PageMetabase.vue') },
+    ],
+    // beforeEnter: helperGuard,
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '*',
     component: () => import('pages/Error404.vue'),

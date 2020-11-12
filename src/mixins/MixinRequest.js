@@ -8,8 +8,8 @@ const getHeaders = (headers = {}) => {
     'Content-Type': 'application/json',
     ...headers,
   };
-  if (localStorage.jwtToken) {
-    headers.Authorization = `Bearer ${localStorage.jwtToken}`;
+  if (localStorage.jwtAdminToken) {
+    headers.Authorization = `Bearer ${localStorage.jwtAdminToken}`;
   }
   return headers;
 };
