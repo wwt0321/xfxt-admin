@@ -31,9 +31,9 @@
     >
       <q-scroll-area class="fit">
         <div v-if="minidrawer" style="height: 8px;" />
-        <div v-for="group in groups" :key="group.id">
+        <div v-for="group in groups.nodes" :key="group.id">
           <q-item-label header dense>{{ group.name }}</q-item-label>
-          <q-item v-for="func in group.functions" :to="func.route" :key="func.id" dense>
+          <q-item v-for="func in group.functions.nodes" :to="func.route" :key="func.id" dense>
             <q-tooltip
               v-if="minidrawer"
               anchor="center right"
