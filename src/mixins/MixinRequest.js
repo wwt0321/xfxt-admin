@@ -20,7 +20,7 @@ const gaxios = (queryName, variables) => {
   }
   return axios({
     method: 'POST',
-    url: '/graphql',
+    url: '/postgraphiles/admin/graphql',
     headers: getHeaders(),
     data: queries[queryName](variables),
   });
