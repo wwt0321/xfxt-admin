@@ -1,6 +1,7 @@
 import { map, keys, intersection, zipObj } from 'rambda';
 import { MixinUtils } from '../mixins/MixinUtils';
 import { MixinRequest } from '../mixins/MixinRequest';
+import { escape } from 'html-escaper';
 
 export const MixinCRUD = {
   mixins: [MixinUtils, MixinRequest],
@@ -12,7 +13,6 @@ export const MixinCRUD = {
       mutating: 0, // 写入状态指示器，大于 0 时禁用写操作按钮
       modeEdit: false, // 切换到编辑状态
       initEdata: {}, // 用来存储 edata 的初始状态，添加新项目时以此为默认值
-      totalCount: 0, // 列表数据总数
       pagination: {
         sortBy: '',
         descending: Boolean,
@@ -20,9 +20,16 @@ export const MixinCRUD = {
         rowsPerPage: 10,
         rowsNumber: 0,
       },
+      selected: [],
     };
   },
   computed: {
+    dicts() {
+      return this.$store.state.dicts;
+    },
+    totalCount() {
+      return this.pagination.rowsNumber;
+    },
     pages() {
       return Math.ceil(this.totalCount / this.pagination.rowsPerPage);
     },
@@ -32,6 +39,9 @@ export const MixinCRUD = {
         offset: (this.pagination.page - 1) * this.pagination.rowsPerPage,
       };
     },
+    /**
+     * 默认排序方法，结合字段上的可排序标志
+     */
     sortField() {
       if (!this.pagination.sortBy) {
         return '';
@@ -58,23 +68,40 @@ export const MixinCRUD = {
         })
         .onOk(() => {
           this.deleteRow(id);
+          this.refresh();
         });
     },
 
     // 删除指定行的数据，需要自己定义 this.gqlDelete
-    deleteRow(id) {
-      this.$apollo
-        .mutate({
-          mutation: this.gqlDelete,
-          variables: {
-            id,
-          },
+    async deleteRow(id) {
+      await this.grequest(this.gqlDelete, {
+        id,
+      });
+      this.modeDelete = false;
+    },
+
+    // 提示进行批量删除操作
+    showDeleteRows() {
+      const safeNames = this.selected.map((v) => escape(v[this.fieldName])).join('<br/>');
+      const ids = this.selected.map((v) => v[this.fieldId]);
+      this.$q
+        .dialog({
+          title: `确认删除选中的"${ids.length}"项吗？`,
+          message: safeNames,
+          html: true,
+          cancel: true,
         })
-        .then(() => {
-          this.modeDelete = false;
-          this.$apolloProvider.defaultClient.resetStore();
+        .onOk(async () => {
+          await this.deleteRows(ids);
+          this.refresh();
         });
     },
+
+    // 批量删除当前选中项目
+    async deleteRows(ids) {
+      ids.forEach(this.deleteRow);
+    },
+
     showCreate() {
       this.showEdit(this.initEdata);
     },
@@ -82,22 +109,22 @@ export const MixinCRUD = {
     showEdit(row) {
       const validKeys = intersection(keys(row), keys(this.initEdata));
       this.edata = zipObj(validKeys, map((v) => row[v])(validKeys));
-      if (row.id) {
-        this.edata.id = row.id;
+      if (row[this.fieldId]) {
+        this.edata[this.fieldId] = row[this.fieldId];
       }
-      console.log(this.edata);
       this.modeEdit = true;
     },
 
     request({ pagination }) {
       this.pagination = { ...pagination };
+      this.refresh();
     },
 
     // 添加或保存数据，需要自定义 this.gqlUpdate 和 this.gqlCreate
-    save() {
+    async save() {
       const mutation = this.edata.id ? this.gqlUpdate : this.gqlCreate;
-      if (this.saveEdata) {
-        this.edata = this.saveEdata(this.edata);
+      if (this.preSaveEdata) {
+        this.edata = this.preSaveEdata(this.edata);
       }
       const variables = this.edata.id
         ? {
@@ -107,24 +134,16 @@ export const MixinCRUD = {
         : {
             input: this.edata,
           };
-      this.mutating++;
-      this.grequest(mutation, variables)
-        .then(() => {
-          this.modeEdit = false;
-          this.mutating--;
-        })
-        .catch(({ graphQLErrors }) => {
-          this.mutating--;
-          const message = graphQLErrors.map((v) => v.message).join('\n');
-          this.$q.dialog({
-            title: '错误',
-            message: errors[message] || message,
-          });
-        });
+      await this.grequest(mutation, variables);
+      this.modeEdit = false;
+      this.refresh();
+    },
+    checkProperties() {
+      this.assertKeys('fieldId,fieldName,gqlCreate,gqlUpdate,gqlDelete,columns,edata,refresh');
     },
   },
   created() {
-    this.assertKeys('gqlCreate,gqlUpdate,gqlDelete,edata');
+    this.checkProperties();
     this.initEdata = { ...this.edata };
   },
 };

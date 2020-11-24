@@ -1,28 +1,31 @@
 import gql from 'nanographql';
-import { flatten } from 'rambda';
+import { mergeAll } from 'rambda';
+import { simpleMutationTables } from '../../config';
 
-const objects = ['order', 'reserve', 'ticket'];
+const tables = simpleMutationTables;
 
-const firstUpperCase = ([first, ...rest]) => first.toUpperCase + rest.join('');
+const firstUpperCase = ([first, ...rest]) => first.toUpperCase() + rest.join('');
 
-const generate = (name) => {
+const generate = (table) => {
+  const name = table.name;
   const uname = firstUpperCase(name);
+  const id = table.id;
 
   return {
-    [`{$name}.create`]: gql(`
-      mutation($input: {$uname}Input!) {
-        create(input: {{$name}: $input }) {
-          {
-            id
+    [`${name}.create`]: gql(`
+      mutation($input: ${uname}Input!) {
+        create${uname}(input: {${name}: $input }) {
+          ${name} {
+            ${id}
           }
         }
       }
     `),
-    [`{$name}.update`]: gql(`
-      mutation($id: UUID!, $patch: {$uname}Patch!) {
+    [`${name}.update`]: gql(`
+      mutation($id: UUID!, $patch: ${uname}Patch!) {
         update{$uname}(
           input: {
-            id: $id
+            ${id}: $id
             patch: $patch
           }
         ) {
@@ -30,9 +33,9 @@ const generate = (name) => {
         }
       }
     `),
-    [`{$name}.delete`]: gql(`
+    [`${name}.delete`]: gql(`
       mutation($id: UUID!) {
-        delete{$uname}(input: { id: $id }) {
+        delete${uname}(input: { ${id}: $id }) {
           clientMutationId
         }
       }
@@ -40,4 +43,4 @@ const generate = (name) => {
   };
 };
 
-export default flatten(objects.map(generate));
+export default mergeAll(tables.map(generate));

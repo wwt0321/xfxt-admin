@@ -1,8 +1,8 @@
 {
   "name": "base-admin",
   "version": "0.0.1",
-  "description": "A Quasar Framework app",
-  "productName": "Quasar Admin",
+  "description": "宁波工程学院企业微信管理端",
+  "productName": "掌上宁工管理后台",
   "author": "xiongliding <fairplay1986@gmail.com>",
   "private": true,
   "scripts": {
@@ -13,10 +13,12 @@
     "axios": "^0.21.0",
     "core-js": "^3.6.5",
     "docx": "^5.2.2",
+    "html-escaper": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "nanographql": "^2.0.0",
     "quasar": "^1.0.0",
-    "rambda": "^6.3.1"
+    "rambda": "^6.3.1",
+    "vuex": "^3.5.1"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0"
