@@ -9,12 +9,19 @@ const routes = [
     path: '/',
     component: () => import('layouts/LayoutAdmin.vue'),
     children: [
-      { path: '', component: () => import('pages/PageIndex.vue') },
-      { path: '/dashboard', component: () => import('pages/PageIndex.vue') },
+      // 管理端自带功能
       { path: '/iframe/:url', component: () => import('pages/PageIframe.vue') },
       { path: '/metabase/:url', component: () => import('pages/PageMetabase.vue') },
+      { path: '/password', component: () => import('pages/PagePassword.vue') },
+      { path: '/admin', component: () => import('pages/PageAdmin.vue') },
+
+      // @TODO 默认路径
+      // {
+      //   path: '',
+      //   redirect: '/metabase/',
+      // },
     ],
-    // beforeEnter: helperGuard,
+    beforeEnter: helperGuard,
   },
   {
     path: '*',

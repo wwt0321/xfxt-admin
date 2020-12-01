@@ -12,7 +12,7 @@
 
         <q-chip @click="logout" clickable>
           <q-avatar size="28px">
-            <img src="~assets/avatar.svg" style="width: 28px; height: 28px" class="bg-white" />
+            <img src="~assets/avatar.svg" style="width: 28px; height: 28px;" class="bg-white" />
           </q-avatar>
           Admin
           <!-- @TODO 当前登录用户，展开更多菜单 -->
@@ -31,9 +31,9 @@
     >
       <q-scroll-area class="fit">
         <div v-if="minidrawer" style="height: 8px;" />
-        <div v-for="group in groups" :key="group.id">
+        <div v-for="group in groups.nodes" :key="group.id">
           <q-item-label header dense>{{ group.name }}</q-item-label>
-          <q-item v-for="func in group.functions" :to="func.route" :key="func.id" dense>
+          <q-item v-for="func in group.functions.nodes" :to="func.route" :key="func.id" dense>
             <q-tooltip
               v-if="minidrawer"
               anchor="center right"
@@ -64,51 +64,7 @@
 </template>
 
 <script>
-const linksData = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
-  },
-];
-
+import { map, prop } from 'rambda';
 import { MixinCommon } from '../mixins/MixinCommon';
 
 export default {
@@ -117,7 +73,6 @@ export default {
   data() {
     return {
       minidrawer: false,
-      essentialLinks: linksData,
       groups: [],
     };
   },
@@ -131,6 +86,20 @@ export default {
   async mounted() {
     const { groups } = await this.grequest('functions');
     this.groups = groups;
+
+    const data = await this.grequest('dicts');
+    let dicts = map(prop('nodes'), data);
+
+    // 需要特殊呈现的字典 @TODO，下方是例子
+    // const { units } = await this.grequest('units');
+    // dicts.treeUnits = units.nodes.map((v, i, a) => {
+    //   return {
+    //     value: v.id,
+    //     label: (v.order.length > 5 ? (a[i + 1]?.order?.length > 5 ? '┣ ' : '┗ ') : '') + v.name,
+    //   };
+    // });
+
+    this.$store.commit('dicts/set', dicts);
   },
 };
 </script>

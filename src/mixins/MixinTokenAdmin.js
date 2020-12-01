@@ -43,12 +43,12 @@ const MixinTokenAdmin = {
     async exchangeToken(params) {
       const { auth } = await this.grequest('auth', params);
       console.log(auth);
-      if (!auth.jwtToken) {
+      if (!auth.jwtAdminToken) {
         return;
       }
-      token(auth.jwtToken);
+      token(auth.jwtAdminToken);
       this.$router.replace(localStorage.to || '/');
-      return auth.jwtToken;
+      return auth.jwtAdminToken;
     },
   },
 };

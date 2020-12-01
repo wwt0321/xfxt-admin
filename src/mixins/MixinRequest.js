@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { pluck, includes } from 'rambda';
-import queries from '../graphqls/queries.js';
+import queries from '../graphqls/index.js';
+
+console.log(queries);
 
 const getHeaders = (headers = {}) => {
   headers = {
@@ -20,7 +22,7 @@ const gaxios = (queryName, variables) => {
   }
   return axios({
     method: 'POST',
-    url: '/graphql',
+    url: '/postgraphiles/admin/graphql',
     headers: getHeaders(),
     data: queries[queryName](variables),
   });

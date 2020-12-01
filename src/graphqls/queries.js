@@ -4,44 +4,67 @@ export default {
   auth: gql`
     mutation($username: String!, $password: String!) {
       auth: authenticateAdmin(input: { name: $username, password: $password }) {
-        jwtToken
+        jwtAdminToken
       }
     }
   `,
-  ticketTypes: gql`
+  // 按 id -> value, name -> label 的固定格式加载所有配置项，在框架启动时一次性加载
+  dicts: gql`
     query {
-      dict: dictTicketTypesList {
-        id
-        name
+      appTypes: dictAppTypes {
+        nodes {
+          value: id
+          label: name
+        }
       }
-    }
-  `,
-  tickets: gql`
-    query($typeId: Int!) {
-      tickets: ticketsList(condition: { typeId: $typeId }) {
-        id
-        name
-        price
+      roles {
+        nodes {
+          value: id
+          label: name
+        }
+      }
+      genders: dictGenders {
+        nodes {
+          value: id
+          label: name
+        }
       }
     }
   `,
   functions: gql`
     query {
-      groups: functionsList(first: 100, condition: { parentId: null }) {
-        id
-        name
-        functions: childFunctionsList(condition: { active: true }) {
+      groups: functions(first: 100, condition: { parentId: null }) {
+        nodes {
           id
           name
-          route
-          icon
+          functions: childFunctions(condition: { active: true }) {
+            nodes {
+              id
+              name
+              route
+              icon
+            }
+          }
         }
       }
-      functions: functionsList(first: 100) {
-        id
-        route
-        name
-        icon
+    }
+  `,
+  admins: gql`
+    query($first: Int, $offset: Int) {
+      admins(first: $first, offset: $offset) {
+        nodes {
+          uuid
+          name
+          ctime
+          role {
+            id
+            name
+          }
+          parent {
+            uuid
+            name
+          }
+        }
       }
     }
   `,
