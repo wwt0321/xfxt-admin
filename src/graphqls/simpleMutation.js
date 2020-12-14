@@ -10,6 +10,7 @@ const generate = (table) => {
   const name = table.name;
   const uname = firstUpperCase(name);
   const id = table.id;
+  const idType = table.idType || 'UUID';
 
   return {
     [`${name}.create`]: gql(`
@@ -22,7 +23,7 @@ const generate = (table) => {
       }
     `),
     [`${name}.update`]: gql(`
-      mutation($id: UUID!, $patch: ${uname}Patch!) {
+      mutation($id: ${idType}!, $patch: ${uname}Patch!) {
         update${uname}(
           input: {
             ${id}: $id
@@ -34,7 +35,7 @@ const generate = (table) => {
       }
     `),
     [`${name}.delete`]: gql(`
-      mutation($id: UUID!) {
+      mutation($id: ${idType}!) {
         delete${uname}(input: { ${id}: $id }) {
           clientMutationId
         }
