@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { map, prop } from 'rambda';
+import { map, prop, fromPairs } from 'rambda';
 import { MixinCommon } from '../mixins/MixinCommon';
 
 export default {
@@ -100,6 +100,11 @@ export default {
     // });
 
     this.$store.commit('dicts/set', dicts);
+
+    const { configs } = await this.grequest('configs');
+    const pairs = configs.nodes.map((v) => [v.key, { value: v.value, comment: v.comment }]);
+    const configData = fromPairs(pairs);
+    this.$store.commit('configs/set', configData);
   },
 };
 </script>

@@ -4,8 +4,11 @@ import { MixinTokenAdmin } from './MixinTokenAdmin';
 export const MixinCommon = {
   mixins: [MixinRequest, MixinTokenAdmin],
   computed: {
-    config() {
-      return this.$q.localStorage.getItem('config') || {};
+    dicts() {
+      return this.$store.state.dicts;
+    },
+    configs() {
+      return this.$store.state.configs;
     },
   },
 };

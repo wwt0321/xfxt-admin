@@ -24,9 +24,6 @@ export const MixinCRUD = {
     };
   },
   computed: {
-    dicts() {
-      return this.$store.state.dicts;
-    },
     totalCount() {
       return this.pagination.rowsNumber;
     },
