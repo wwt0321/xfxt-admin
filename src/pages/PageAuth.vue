@@ -10,7 +10,17 @@ import { MixinTokenWechat } from '../mixins/MixinTokenWechat.js';
 
 export default {
   name: 'PageAuth',
+  meta() {
+    return {
+      title: '微信授权登录',
+    };
+  },
   mixins: [MixinTokenWechat], // 通过混入不同的 token 规则解决各种授权方式和存储
+  computed: {
+    authpath() {
+      return '/auth2/wechat/authenticate';
+    },
+  },
   mounted() {
     this.exchangeToken();
   },

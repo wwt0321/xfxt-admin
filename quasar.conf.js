@@ -6,7 +6,7 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
-module.exports = function(/* ctx */) {
+module.exports = function (/* ctx */) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
@@ -97,7 +97,7 @@ module.exports = function(/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Meta', 'Dialog', 'Notify', 'Loading'],
+      plugins: ['Meta', 'Dialog', 'Notify', 'Loading', 'LocalStorage'],
     },
 
     // animations: 'all', // --- includes all animations
