@@ -71,8 +71,8 @@ module.exports = function (/* ctx */) {
       open: true, // opens browser window automatically
       proxy: {
         // @TODO
-        '/graphql': {
-          target: 'https://www.zhengct.com',
+        '/postgraphiles': {
+          target: 'http://meeting-test.nbyunyi.cn',
           changeOrigin: true,
         },
       },

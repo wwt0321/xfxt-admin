@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { pluck, includes } from 'rambda';
 import queries from '../graphqls/index.js';
+import { tokenKey } from '../../config';
 
 console.log(queries);
 
@@ -10,8 +11,8 @@ const getHeaders = (headers = {}) => {
     'Content-Type': 'application/json',
     ...headers,
   };
-  if (localStorage.jwtAdminToken) {
-    headers.Authorization = `Bearer ${localStorage.jwtAdminToken}`;
+  if (localStorage.getItem(tokenKey)) {
+    headers.Authorization = `Bearer ${localStorage.getItem(tokenKey)}`;
   }
   return headers;
 };

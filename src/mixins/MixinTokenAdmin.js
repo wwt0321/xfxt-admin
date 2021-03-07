@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { MixinRequest } from './MixinRequest';
+import { tokenKey } from '../../config';
 
 /**
  * 提取或存储 jwtToken
@@ -8,14 +9,14 @@ import { MixinRequest } from './MixinRequest';
  */
 const token = (jwtToken) => {
   if (typeof jwtToken !== 'undefined') {
-    localStorage.jwtAdminToken = jwtToken;
+    localStorage.setItem(tokenKey, jwtToken);
     return;
   }
 
-  if (!localStorage.jwtAdminToken) {
+  if (!localStorage.getItem(tokenKey)) {
     return false;
   }
-  return jwt.decode(localStorage.jwtAdminToken);
+  return jwt.decode(localStorage.getItem(tokenKey));
 };
 
 /**
@@ -43,12 +44,12 @@ const MixinTokenAdmin = {
     async exchangeToken(params) {
       const { auth } = await this.grequest('auth', params);
       console.log(auth);
-      if (!auth.jwtAdminToken) {
+      if (!auth.jwtToken) {
         return;
       }
-      token(auth.jwtAdminToken);
+      token(auth.jwtToken);
       this.$router.replace(localStorage.to || '/');
-      return auth.jwtAdminToken;
+      return auth.jwtToken;
     },
   },
 };

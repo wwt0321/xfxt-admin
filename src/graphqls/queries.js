@@ -4,7 +4,18 @@ export default {
   auth: gql`
     mutation($username: String!, $password: String!) {
       auth: authenticateAdmin(input: { name: $username, password: $password }) {
-        jwtAdminToken
+        jwtToken
+      }
+    }
+  `,
+  configs: gql`
+    query {
+      configs {
+        nodes {
+          key
+          value
+          comment
+        }
       }
     }
   `,
