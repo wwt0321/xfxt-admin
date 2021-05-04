@@ -14,6 +14,7 @@ const routes = [
       { path: '/metabase/:url', component: () => import('pages/PageMetabase.vue') },
       { path: '/password', component: () => import('pages/PagePassword.vue') },
       { path: '/admin', component: () => import('pages/PageAdmin.vue') },
+      { path: '/code', component: () => import('pages/PageCode.vue') },
 
       // @TODO 默认路径
       // {

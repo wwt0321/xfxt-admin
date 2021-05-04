@@ -79,7 +79,7 @@ export const MixinCRUD = {
 
     // 提示进行批量删除操作
     showDeleteRows() {
-      const safeNames = this.selected.map((v) => escape(v[this.fieldName])).join('<br/>');
+      const safeNames = this.selected.map((v) => escape(v[this.fieldName] || '')).join('<br/>');
       const ids = this.selected.map((v) => v[this.fieldId]);
       this.$q
         .dialog({
@@ -133,6 +133,34 @@ export const MixinCRUD = {
       this.modeEdit = false;
       this.refresh();
     },
+
+    /**
+     * simpleList 简单列表，只需传入查询名称
+     * queryName {String} - 查询名称
+     * params {Object} - 分页与查询条件参数
+     *
+     * 简单列表刷新，只需传入 graphql query 名称和分页之外的参数
+     */
+    async simpleList(queryName, params = {}, returnOnly = false) {
+      const data = await this.grequest(queryName, {
+        ...this.paginationParams,
+        ...params,
+      });
+      const k = keys(data);
+      if (k.length != 1) {
+        this.$q.notify({
+          message: `simpleList 只支持一个健，实际得到了${k}`,
+          icon: 'report_problem',
+        });
+        throw data;
+      }
+      this.pagination.rowsNumber = data[k[0]].totalCount;
+      if (!returnOnly) {
+        this.rows = data[k[0]].nodes;
+      }
+      return this.rows;
+    },
+
     checkProperties() {
       this.assertKeys('fieldId,fieldName,gqlCreate,gqlUpdate,gqlDelete,columns,edata,refresh');
     },
