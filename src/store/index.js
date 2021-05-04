@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import dicts from './dicts';
+import configs from './configs';
 
 Vue.use(Vuex);
 
@@ -14,10 +15,11 @@ Vue.use(Vuex);
  * with the Store instance.
  */
 
-export default function(/* { ssrContext } */) {
+export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       dicts,
+      configs,
     },
 
     // enable strict mode (adds overhead!)

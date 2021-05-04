@@ -1,31 +1,40 @@
 import jwt from 'jsonwebtoken';
+import { tokenKey } from '../../config';
 
 /**
- * 提取或存储 jwtToken
- * @params string jwtToken - json web token
- * 不传入时为获取，传入时为设置
+ * 提取 jwtToken
+ * @return {String} - token
  */
-const token = (jwtToken = null) => {
-  if (jwtToken) {
-    localStorage.jwtToken = jwtToken;
-    return;
+const getToken = () => {
+  if (!localStorage.getItem(tokenKey)) {
+    return null;
   }
 
-  if (!localStorage.jwtToken) {
-    return false;
+  const token = jwt.decode(localStorage.getItem(tokenKey));
+
+  // 是否快要过期
+  const isNearExpired = token.exp - new Date() / 1000 < 3600;
+
+  // 必须有 id 且有效期够长
+  if (!token.id || isNearExpired) {
+    localStorage.removeItem(tokenKey);
+    return null;
   }
-  return jwt.decode(localStorage.jwtToken);
+
+  return token;
 };
 
 /**
  * 增加一个 appid 后，成为有效的 beforeEnter
- * @params String appid - 公众号的 appid
+ * @params String appid - 公众号的 appid 或 企业号的 corpid
  * return beforeEnter
  */
-const helperGuard = (appid, host, state) => (to, from, next) => {
+const helperGuard = (appid, host, state) => (to, _from, next) => {
   const redirect = host + '/auth/code';
 
-  if (!token()) {
+  const token = getToken();
+  console.log('-> token', token);
+  if (!token) {
     localStorage.to = to.fullPath;
     window.location.replace(
       `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${redirect}&response_type=code&scope=snsapi_userinfo&state=${state}#wechat_redirect`,
@@ -35,26 +44,32 @@ const helperGuard = (appid, host, state) => (to, from, next) => {
 };
 
 const MixinTokenWechat = {
-  methods: {
-    token,
+  computed: {
+    token: {
+      get: getToken,
+      set(jwtToken) {
+        localStorage.setItem(tokenKey, jwtToken);
+      },
+    },
+  },
 
+  methods: {
     /**
      * 用 code 交换 token
      */
     exchangeToken() {
       const code = this.$route.params.code;
-      this.$axios
-        .get('/auth/wechat/authenticate', {
+      return this.$axios
+        .get(this.authpath, {
           params: {
             code,
           },
         })
         .then(({ data }) => {
-          console.log(data);
           if (!data.jwtToken) {
-            return;
+            throw data;
           }
-          localStorage.jwtToken = data.jwtToken;
+          this.token = data.jwtToken;
           this.$router.replace(localStorage.to);
         });
     },

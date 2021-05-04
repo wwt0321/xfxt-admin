@@ -67,12 +67,12 @@ module.exports = function (/* ctx */) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       https: false,
-      port: 8080, // @TODO
+      port: PLACEHOLDER,
       open: true, // opens browser window automatically
       proxy: {
         // @TODO
         '/postgraphiles': {
-          target: 'http://meeting-test.nbyunyi.cn',
+          target: 'http://test.nbyunyi.cn:PLACEHOLDER',
           changeOrigin: true,
         },
       },

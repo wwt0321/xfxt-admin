@@ -5,4 +5,4 @@ export const endpoint = '/postgraphiles/admin/graphql';
 export const tokenKey = 'jwtAdmin';
 
 // 用于自动生成 GraphQL 接口的基础 Mutation 操作
-export const simpleMutationTables = [{ name: 'admin', id: 'uuid' }];
+export const simpleMutationTables = [{ name: 'admin', id: 'id', idType: 'uuid' }];

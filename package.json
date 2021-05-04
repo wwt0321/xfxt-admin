@@ -1,27 +1,26 @@
 {
   "name": "base-admin",
-  "version": "0.0.1",
-  "description": "宁波工程学院企业微信管理端",
-  "productName": "掌上宁工管理后台",
+  "version": "1.0.0-SNAPSHOT",
+  "description": "PLACEHOLDER",
+  "productName": "PLACEHOLDER",
   "author": "xiongliding <fairplay1986@gmail.com>",
   "private": true,
   "scripts": {
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
-    "axios": "^0.21.0",
-    "core-js": "^3.6.5",
-    "docx": "^5.2.2",
-    "html-escaper": "^3.0.0",
-    "jsonwebtoken": "^8.5.1",
+    "@quasar/extras": "^1.10.4",
+    "axios": "^0.21.1",
+    "core-js": "^3.11.2",
+    "html-escaper": "^3.0.3",
+    "jwt-decode": "^3.1.2",
     "nanographql": "^2.0.0",
-    "quasar": "^1.0.0",
-    "rambda": "^6.3.1",
-    "vuex": "^3.5.1"
+    "quasar": "^1.15.13",
+    "rambda": "^6.7.0",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
-    "@quasar/app": "^2.0.0"
+    "@quasar/app": "^2.2.6"
   },
   "browserslist": [
     "ie >= 11",
@@ -37,7 +36,7 @@
     "last 5 Opera versions"
   ],
   "engines": {
-    "node": ">= 10.18.1",
+    "node": ">= 14.0.0",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
   }

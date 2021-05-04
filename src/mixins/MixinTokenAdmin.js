@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwtDecode from 'jwt-decode';
 import { MixinRequest } from './MixinRequest';
 import { tokenKey } from '../../config';
 
@@ -16,7 +16,7 @@ const token = (jwtToken) => {
   if (!localStorage.getItem(tokenKey)) {
     return false;
   }
-  return jwt.decode(localStorage.getItem(tokenKey));
+  return jwtDecode(localStorage.getItem(tokenKey));
 };
 
 /**

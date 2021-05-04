@@ -26,5 +26,26 @@ export const MixinUtils = {
           .onOk(resolve);
       });
     },
+    async confirm(options) {
+      if (typeof options === 'string') {
+        options = {
+          message: options,
+        };
+      }
+      return new Promise((resolve) => {
+        this.$q
+          .dialog({
+            persistent: true,
+            cancel: true,
+            ...options,
+          })
+          .onOk(() => {
+            resolve(true);
+          })
+          .onCancel(() => {
+            resolve(false);
+          });
+      });
+    },
   },
 };

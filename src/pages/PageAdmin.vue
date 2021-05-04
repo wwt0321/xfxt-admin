@@ -26,7 +26,7 @@
 
     <!-- 添加与编辑 -->
     <q-dialog v-model="modeEdit" no-backdrop-dismiss>
-      <q-card style="width:640px;">
+      <q-card style="width: 640px">
         <q-form @submit="save">
           <q-card-section>
             <div class="text-h6">{{ edata.id ? '修改' : '添加' }}</div>
@@ -62,7 +62,7 @@ export default {
   data() {
     return {
       // 主键字段和名称字段
-      fieldId: 'uuid',
+      fieldId: 'id',
       fieldName: 'name',
 
       // 改动数据的接口名称
@@ -74,7 +74,7 @@ export default {
       columns: [
         { name: 'name', label: '账号', field: 'name', align: 'left' },
         { name: 'role', label: '类型', field: 'role', align: 'left', format: (v) => v?.name || '无' },
-        { name: 'ctime', label: '创建时间', field: 'ctime', align: 'left' },
+        { name: 'tzCreate', label: '创建时间', field: 'tzCreate', align: 'left' },
         { name: 'parent', label: '上级', field: 'parent', align: 'left', format: (v) => v?.name || '无' },
         { name: 'operation', label: '操作', style: 'width: 100px', align: 'right' },
       ],
@@ -99,17 +99,17 @@ export default {
       this.selected = [];
     },
     async resetPassword({ id, name }) {
-      const password = '' + parseInt(Math.random() * 90000000 + 10000000, 10);
-      if (!confirm(`重置${name}的密码吗？`)) {
+      const isConfirm = await this.confirm(`重置${name}的密码吗？`);
+      console.log(isConfirm);
+      if (!isConfirm) {
         return;
       }
-      await this.grequest(this.gqlUpdate, {
+
+      const { resetPassword } = await this.grequest('resetPassword', {
         id,
-        patch: {
-          password,
-        },
       });
-      this.alert('请记住新密码', password);
+      console.log(resetPassword.plain);
+      this.alert({ title: '请记住新密码', message: resetPassword.plain });
     },
 
     preSave() {
