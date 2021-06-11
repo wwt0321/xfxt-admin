@@ -1,1 +1,39 @@
 // app global css in SCSS form
+@import '../../node_modules/@fontsource/roboto-mono/400.css';
+/*
+@font-face {
+  font-family: robotomono;
+}
+*/
+
+.q-table__top {
+  .q-form > * {
+    margin-right: 8px;
+  }
+  .operations {
+    height: 40px;
+  }
+  .operations > * {
+    margin-left: 8px;
+  }
+}
+
+.q-td.multiline {
+  padding: 0 !important;
+  & > div {
+    padding: 4px 8px;
+    border-bottom: 1px solid #eee;
+  }
+  & > div:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Table Column Width */
+.tcw-uuid {
+  font-family: monospace;
+  width: 100px;
+}
+.tcw-short {
+  width: 80px;
+}

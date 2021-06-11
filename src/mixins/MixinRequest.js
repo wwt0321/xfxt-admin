@@ -3,8 +3,6 @@ import { pluck, includes } from 'rambda';
 import queries from '../graphqls/index.js';
 import { tokenKey, endpoint } from '../../config';
 
-console.log(queries);
-
 const getHeaders = (headers = {}) => {
   headers = {
     Accept: 'application/json',

@@ -11,9 +11,31 @@
     </q-select>
     <q-input v-model="name" label="数据名称" placeholder="请注意，类型的首字母是大写的" />
     <q-btn @click="getCode" label="获取代码" />
-    <pre>{{ fields }}</pre>
-    <pre>{{ inputs }}</pre>
-    <pre>{{ table }}</pre>
+    <q-card class="q-my-md">
+      <q-card-section>
+        <div class="text-h6">graphql query</div>
+        <pre>{{ fields }}</pre>
+        <pre>{{ querys }}</pre>
+      </q-card-section>
+    </q-card>
+    <q-card class="q-my-md">
+      <q-card-section>
+        <div class="text-h6">字段与初始值，适用于 edata</div>
+        <pre>{{ edata }}</pre>
+      </q-card-section>
+    </q-card>
+    <q-card class="q-my-md">
+      <q-card-section>
+        <div class="text-h6">表单输入框，适用于 form</div>
+        <pre>{{ inputs }}</pre>
+      </q-card-section>
+    </q-card>
+    <q-card class="q-my-md">
+      <q-card-section>
+        <div class="text-h6">列描述，适用于 table columns</div>
+        <pre>{{ table }}</pre>
+      </q-card-section>
+    </q-card>
   </div>
 </template>
 
@@ -28,6 +50,7 @@ export default {
       filtered: [],
       name: '',
       fields: '',
+      querys: '',
       inputs: '',
       table: '',
     };
@@ -79,25 +102,47 @@ export default {
       });
 
       const initValue = (typeName) => {
-        if (['Int', 'BigInt'].includes(typeName)) {
+        if (['Int', 'BigInt', 'Float', 'BigFloat'].includes(typeName)) {
           return '0';
         }
         if (['JSON'].includes(typeName)) {
-          return "'' // TODO";
+          return 'null // TODO';
         }
         if (['Date'].includes(typeName)) {
-          return 'new Date()';
+          return "'DEFAULT_DATE'";
         }
         return "''";
       };
 
-      this.fields = fields
-        .map((v) => {
-          return v.name + ': ' + initValue((v.type.ofType || {}).name);
-        })
-        .join('\n');
+      const lowcaseName = this.name[0].toLowerCase() + this.name.substring(1);
+      this.fields = [
+        `${lowcaseName}: gql\``,
+        `  query($id: UUID!) {`,
+        `    ${lowcaseName}(id: $id) {`,
+        `      ${fields.map((v) => v.name).join('\n      ')}`,
+        '    }',
+        '  }',
+        '`',
+      ].join('\n');
 
-      console.log(fields);
+      this.querys = [
+        `${lowcaseName}s: gql\``,
+        `  query($first: Int, $offset: Int, $condition: ${this.name}Condition, $filter: ${this.name}Filter, $orderBy: [${lowcaseName}sOrder!]) {`,
+        `    ${lowcaseName}s (first: $fisrt, offset: $offset, condition: $condition, filter: $filter, orderBy: $orderBy) {`,
+        '      nodes {',
+        `        ${fields.map((v) => v.name).join('\n        ')}`,
+        '      }',
+        '    }',
+        '  }',
+        '`',
+      ].join('\n');
+
+      this.edata = fields
+        .map((v) => {
+          console.log(v);
+          return v.name + ': ' + initValue((v.type || {}).name);
+        })
+        .join(',\n');
 
       this.inputs = fields
         .filter((v) => {
@@ -105,21 +150,21 @@ export default {
         })
         .map((v) => {
           const rules = v.type.kind == 'NON_NULL' ? ':rules="[v => !!v]"' : '';
-          const typeName = (v.type.ofType || {}).name;
-          if (['Int', 'BigInt'].includes(typeName)) {
-            return `<q-input label="${v.description}" v-model.number="edata.${v.name}" type="number" ${rules} />`;
+          const typeName = (v.type || {}).name;
+          if (['Int', 'BigInt', 'Float', 'BigFloat'].includes(typeName)) {
+            return `<q-input outlined stack-label dense class="q-my-sm" label="${v.description}" v-model.number="edata.${v.name}" type="number" ${rules} />`;
           }
           if (['JSON'].includes(typeName)) {
-            return `<q-field label="${v.description}" v-model="edata.${v.name}">
+            return `<q-field outlined stack-label dense class="q-my-sm" label="${v.description}" v-model="edata.${v.name}">
               <!-- TODO: JSON -->
             </q-field>`;
           }
           if (['Date'].includes(typeName)) {
-            return `<q-input label="${v.description}" v-model="edata.${v.name}" mask="date" :rules="['date']">
+            return `<q-input outlined stack-label dense class="q-my-sm" label="${v.description}" v-model="edata.${v.name}" mask="####-##-##">
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy ref="${v.name}Proxy" transition-show="scale" transition-hide="scale" >
-                    <q-date minimal v-model="edata.${v.name}" @input="() => $refs.${v.name}Proxy.hide()" />
+                    <q-date minimal v-model="edata.${v.name}" @input="() => $refs.${v.name}Proxy.hide()" mask="YYYY-MM-DD" />
                   </q-popup-proxy>
                 </q-icon>
               </template>
@@ -127,6 +172,10 @@ export default {
           }
           if (false) {
             return `<q-select
+              outlined
+              stack-label
+              dense
+              class="q-my-sm"
               label="状态"
               v-model="edata.${v.name}"
               :options="TODO"
@@ -136,7 +185,7 @@ export default {
               emit-value
             />`;
           }
-          return `<q-input label="${v.description}" v-model="edata.${v.name}" ${rules} />`;
+          return `<q-input outlined stack-label dense class="q-my-sm" label="${v.description}" v-model="edata.${v.name}" ${rules} />`;
         })
         .join('\n');
 

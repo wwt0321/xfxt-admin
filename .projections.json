@@ -2,9 +2,11 @@
   "src/pages/Page*.vue": { "type": "p" },
   "src/layouts/Layout*.vue": { "type": "l" },
   "src/forms/Form*.vue": { "type": "f" },
+  "src/tables/Table*.vue": { "type": "t" },
+  "src/mixins/Mixin*.js": { "type": "m" },
+  "src/components/Component*.vue": { "type": "c" },
   "src/router/routes.js": { "type": "r" },
   "src/boot/.js": { "type": "b" },
-  "src/mixins/Mixin*.js": { "type": "m" },
   "src/graphqls/*.js": { "type": "g" },
   "src/store/*.js": { "type": "s" }
 }

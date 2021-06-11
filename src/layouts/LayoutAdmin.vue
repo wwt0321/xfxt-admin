@@ -1,9 +1,9 @@
 <template>
   <q-layout view="hHh Lpr lFf">
     <q-header elevated class="print-hide">
-      <q-toolbar style="padding-left: 0;">
-        <q-img v-show="minidrawer" src="~assets/logo.png" style="width: 56px; height: 50px;" contain />
-        <q-img v-show="!minidrawer" src="~assets/banner.png" style="width: 200px; height: 50px;" contain />
+      <q-toolbar style="padding-left: 0">
+        <q-img v-show="minidrawer" src="~assets/logo.png" style="width: 56px; height: 50px" contain />
+        <q-img v-show="!minidrawer" src="~assets/banner.png" style="width: 200px; height: 50px" contain />
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="minidrawer = !minidrawer" />
 
         <q-toolbar-title>
@@ -12,7 +12,7 @@
 
         <q-chip @click="logout" clickable>
           <q-avatar size="28px">
-            <img src="~assets/avatar.svg" style="width: 28px; height: 28px;" class="bg-white" />
+            <img src="~assets/avatar.svg" style="width: 28px; height: 28px" class="bg-white" />
           </q-avatar>
           Admin
           <!-- @TODO 当前登录用户，展开更多菜单 -->
@@ -20,40 +20,37 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      :mini="minidrawer"
-      show-if-above
-      content-class="bg-grey-1"
-      :width="200"
-      :breakpoint="1000"
-      class="print-hide"
-      bordered
-    >
+    <q-drawer :mini="minidrawer" show-if-above content-class="bg-grey-1" :breakpoint="1000" class="print-hide" bordered>
       <q-scroll-area class="fit">
-        <div v-if="minidrawer" style="height: 8px;" />
-        <div v-for="group in groups.nodes" :key="group.id">
-          <q-item-label header dense>{{ group.name }}</q-item-label>
-          <q-item v-for="func in group.functions.nodes" :to="func.route" :key="func.id" dense>
-            <q-tooltip
-              v-if="minidrawer"
-              anchor="center right"
-              self="center left"
-              :offset="[0, 0]"
-              transition-show="fade"
-              transition-hide="fade"
-              content-style="border-top-left-radius: 0; border-bottom-left-radius: 0"
-            >
-              <span style="font-size: 18px; line-height: 19px;">
-                {{ func.name }}
-              </span>
-            </q-tooltip>
-            <q-item-section avatar>
-              <q-icon :name="func.icon" size="xs" />
-            </q-item-section>
-            <q-item-section>{{ func.name }}</q-item-section>
-          </q-item>
-          <q-separator spaced v-if="minidrawer" />
-        </div>
+        <div v-if="minidrawer" style="height: 8px" />
+        <q-list>
+          <q-expansion-item
+            v-for="f1 in functions.nodes"
+            :key="f1.id"
+            :icon="f1.icon"
+            :label="f1.name"
+            group="f1"
+            :content-inset-level="1"
+            expand-separator
+          >
+            <template v-for="f2 in f1.functions.nodes">
+              <q-item v-if="f2.route" :to="f2.route" :key="f2.id"> {{ f2.name }} </q-item>
+              <template v-else>
+                <q-expansion-item
+                  :key="f2.id"
+                  :label="f2.name"
+                  :content-inset-level="0.5"
+                  dense-toggle
+                  expand-separator
+                >
+                  <q-item :header-inset-level="1" v-for="f3 in f2.functions.nodes" :to="f3.route" :key="f3.id">
+                    {{ f3.name }}
+                  </q-item>
+                </q-expansion-item>
+              </template>
+            </template>
+          </q-expansion-item>
+        </q-list>
       </q-scroll-area>
     </q-drawer>
 
@@ -73,7 +70,7 @@ export default {
   data() {
     return {
       minidrawer: false,
-      groups: [],
+      functions: [],
     };
   },
   methods: {
@@ -84,8 +81,8 @@ export default {
     },
   },
   async mounted() {
-    const { groups } = await this.grequest('functions');
-    this.groups = groups;
+    const { functions } = await this.grequest('functions');
+    this.functions = functions;
 
     const data = await this.grequest('dicts');
     let dicts = map(prop('nodes'), data);

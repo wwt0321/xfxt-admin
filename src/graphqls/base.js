@@ -24,11 +24,8 @@ export default {
         fields {
           name
           type {
+            name
             kind
-            ofType {
-              name
-              kind
-            }
           }
           description
         }
@@ -59,16 +56,23 @@ export default {
   `,
   functions: gql`
     query {
-      groups: functions(first: 100, condition: { parentId: null }) {
+      functions(condition: { active: true, parentId: null }) {
         nodes {
           id
           name
+          icon
           functions: childFunctions(condition: { active: true }) {
             nodes {
               id
               name
               route
-              icon
+              functions: childFunctions(condition: { active: true }) {
+                nodes {
+                  id
+                  name
+                  route
+                }
+              }
             }
           }
         }

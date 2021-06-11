@@ -15,8 +15,16 @@
     >
       <template v-slot:top>
         <q-space />
-        <q-btn flat :disable="loading > 0" icon="add" @click="showCreate" />
-        <q-btn flat :disable="loading > 0 || selected.length == 0" icon="delete" @click="showDeleteRows" />
+        <div class="flex operations">
+          <q-btn outline color="primary" icon="add" @click="showCreate" :disable="loading > 0" />
+          <q-btn
+            outline
+            color="red"
+            icon="clear"
+            @click="showDeleteRows"
+            :disable="loading > 0 || selected.length == 0"
+          />
+        </div>
       </template>
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <q-btn v-if="row.id != 1" @click="resetPassword(row)" label="重置密码" />
