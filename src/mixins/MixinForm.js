@@ -1,4 +1,4 @@
-import { keys, map } from 'rambda';
+import { map, keys, intersection, zipObj } from 'rambda';
 import { MixinRequest } from './MixinRequest';
 import { MixinCommon } from './MixinCommon';
 import { MixinUtils } from './MixinUtils';
@@ -22,6 +22,7 @@ export const MixinForm = {
       core: {}, // 模块内部核心数据
       gql: {}, // 挂载GraphQL请求
       mutating: 0,
+      loaded: false,
     };
   },
 
@@ -36,7 +37,9 @@ export const MixinForm = {
       const mutation = this.primaryId ? this.gql.update : this.gql.create;
       // 如果是数字类型，把默认值改回 null
       // this.edata = map((v, k) => (this.initEdata[k] === 0 && v === '' ? null : v))(this.edata);
+      console.log(this.preSave);
       this.preSave?.();
+      console.log(this.edata);
       const variables = this.primaryId
         ? {
             id: this.primaryId || undefined,
@@ -55,10 +58,18 @@ export const MixinForm = {
     async load(returnOnly = false) {
       const data = await this.grequest(this.gql.query, { id: this.primaryId });
       const key = keys(data)[0];
-      if (!returnOnly) {
-        this.edata = data[key];
+      const row = data[key];
+      if (row === null) {
+        return null;
       }
-      return data[key];
+      console.log(keys(row), keys(this.initEdata));
+      const validKeys = intersection(keys(row), keys(this.initEdata));
+      const validData = zipObj(validKeys, map((v) => row[v])(validKeys));
+      if (!returnOnly) {
+        this.edata = validData;
+      }
+      this.loaded = true;
+      return validData;
     },
 
     checkProperties() {
@@ -82,6 +93,7 @@ export const MixinForm = {
       }
 
       this.initEdata = { ...this.edata };
+      console.log(this.initEdata);
       this.edata = map((v) => {
         if (v === 'DEFAULT_DATE') {
           return this.defaults.date;

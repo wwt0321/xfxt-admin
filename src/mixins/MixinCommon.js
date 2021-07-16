@@ -6,11 +6,14 @@ import { date } from 'quasar';
 export const MixinCommon = {
   mixins: [MixinRequest, MixinTokenAdmin, MixinUtils],
   computed: {
+    configs() {
+      return this.$store.state.configs;
+    },
     dicts() {
       return this.$store.state.dicts;
     },
-    configs() {
-      return this.$store.state.configs;
+    enums() {
+      return this.$store.state.enums;
     },
     defaults() {
       return {
@@ -22,6 +25,42 @@ export const MixinCommon = {
           'YYYY-MM-DD',
         ),
         now: date.formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss'),
+      };
+    },
+    attrs() {
+      return {
+        formField: {
+          outlined: true,
+          stackLabel: true,
+          dense: true,
+          hideBottomSpace: true,
+          class: 'q-my-sm',
+        },
+        formFieldSelect: {
+          outlined: true,
+          stackLabel: true,
+          dense: true,
+          hideBottomSpace: true,
+          class: 'q-my-sm',
+          mapOptions: true,
+          emitValue: true,
+          clearable: true,
+        },
+        filterField: {
+          outlined: true,
+          stackLabel: true,
+          dense: true,
+          hideBottomSpace: true,
+          clearable: true,
+        },
+        filterFieldSelect: {
+          outlined: true,
+          stackLabel: true,
+          dense: true,
+          hideBottomSpace: true,
+          mapOptions: true,
+          emitValue: true,
+        },
       };
     },
   },

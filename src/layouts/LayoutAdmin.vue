@@ -55,7 +55,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view v-if="loaded" />
     </q-page-container>
   </q-layout>
 </template>
@@ -71,6 +71,7 @@ export default {
     return {
       minidrawer: false,
       functions: [],
+      loaded: false,
     };
   },
   methods: {
@@ -98,10 +99,14 @@ export default {
 
     this.$store.commit('dicts/set', dicts);
 
+    const enums = await this.grequest('enums');
+    this.$store.commit('enums/set', enums);
+
     const { configs } = await this.grequest('configs');
     const pairs = configs.nodes.map((v) => [v.key, { value: v.value, comment: v.comment }]);
     const configData = fromPairs(pairs);
     this.$store.commit('configs/set', configData);
+    this.loaded = true;
   },
 };
 </script>

@@ -1,12 +1,12 @@
 {
-  "src/pages/Page*.vue": { "type": "p" },
-  "src/layouts/Layout*.vue": { "type": "l" },
-  "src/forms/Form*.vue": { "type": "f" },
-  "src/tables/Table*.vue": { "type": "t" },
-  "src/mixins/Mixin*.js": { "type": "m" },
-  "src/components/Component*.vue": { "type": "c" },
-  "src/router/routes.js": { "type": "r" },
   "src/boot/.js": { "type": "b" },
+  "src/components/Component*.vue": { "type": "c" },
+  "src/forms/Form*.vue": { "type": "f" },
   "src/graphqls/*.js": { "type": "g" },
-  "src/store/*.js": { "type": "s" }
+  "src/layouts/Layout*.vue": { "type": "l" },
+  "src/mixins/Mixin*.js": { "type": "m" },
+  "src/pages/Page*.vue": { "type": "p" },
+  "src/router/routes.js": { "type": "r" },
+  "src/store/*.js": { "type": "s" },
+  "src/tables/Table*.vue": { "type": "t" }
 }

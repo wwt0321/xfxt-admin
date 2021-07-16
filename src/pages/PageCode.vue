@@ -127,8 +127,8 @@ export default {
 
       this.querys = [
         `${lowcaseName}s: gql\``,
-        `  query($first: Int, $offset: Int, $condition: ${this.name}Condition, $filter: ${this.name}Filter, $orderBy: [${lowcaseName}sOrder!]) {`,
-        `    ${lowcaseName}s (first: $fisrt, offset: $offset, condition: $condition, filter: $filter, orderBy: $orderBy) {`,
+        `  query($first: Int, $offset: Int, $condition: ${this.name}Condition, $filter: ${this.name}Filter, $orderBy: [${this.name}sOrderBy!]) {`,
+        `    ${lowcaseName}s (first: $first, offset: $offset, condition: $condition, filter: $filter, orderBy: $orderBy) {`,
         '      nodes {',
         `        ${fields.map((v) => v.name).join('\n        ')}`,
         '      }',
@@ -152,15 +152,15 @@ export default {
           const rules = v.type.kind == 'NON_NULL' ? ':rules="[v => !!v]"' : '';
           const typeName = (v.type || {}).name;
           if (['Int', 'BigInt', 'Float', 'BigFloat'].includes(typeName)) {
-            return `<q-input outlined stack-label dense class="q-my-sm" label="${v.description}" v-model.number="edata.${v.name}" type="number" ${rules} />`;
+            return `<q-input v-bind="attrs.formFilter" label="${v.description}" v-model.number="edata.${v.name}" type="number" ${rules} />`;
           }
           if (['JSON'].includes(typeName)) {
-            return `<q-field outlined stack-label dense class="q-my-sm" label="${v.description}" v-model="edata.${v.name}">
+            return `<q-field v-bind="attrs.formFilter" label="${v.description}" v-model="edata.${v.name}">
               <!-- TODO: JSON -->
             </q-field>`;
           }
           if (['Date'].includes(typeName)) {
-            return `<q-input outlined stack-label dense class="q-my-sm" label="${v.description}" v-model="edata.${v.name}" mask="####-##-##">
+            return `<q-input v-bind="attrs.formFilter" label="${v.description}" v-model="edata.${v.name}" mask="####-##-##">
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy ref="${v.name}Proxy" transition-show="scale" transition-hide="scale" >
@@ -172,20 +172,13 @@ export default {
           }
           if (false) {
             return `<q-select
-              outlined
-              stack-label
-              dense
-              class="q-my-sm"
               label="状态"
+              v-bind="attrs.formFilterSelect"
               v-model="edata.${v.name}"
               :options="TODO"
-              option-value="id"
-              option-label="name"
-              map-options
-              emit-value
             />`;
           }
-          return `<q-input outlined stack-label dense class="q-my-sm" label="${v.description}" v-model="edata.${v.name}" ${rules} />`;
+          return `<q-input v-bind="attrs.formFilter" label="${v.description}" v-model="edata.${v.name}" ${rules} />`;
         })
         .join('\n');
 
