@@ -5,7 +5,10 @@
   font-family: robotomono;
 }
 */
-
+thead tr:first-child th {
+  /* bg color is important for th; just specify one */
+  background-color: #f2f3f5;
+}
 .q-table__top {
   .q-form > * {
     margin-right: 8px;
@@ -16,6 +19,10 @@
   .operations > * {
     margin-left: 8px;
   }
+}
+
+.q-dialog__inner--minimized > div {
+  max-width: 1440px;
 }
 
 .q-td.multiline {
