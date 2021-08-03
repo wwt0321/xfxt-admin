@@ -54,6 +54,18 @@ export default {
       }
     }
   `,
+  functionsFlat: gql`
+    query {
+      functions(condition: { active: true, parentId: null }) {
+        nodes {
+          id
+          name
+          icon
+          route
+        }
+      }
+    }
+  `,
   functions: gql`
     query {
       functions(condition: { active: true, parentId: null }) {
