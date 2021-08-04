@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit">
+    <q-form @submit="goSubmit">
       <div class="row top">
         <div class="dialog-title">{{ primaryId ? '编辑' : '新增' }}角色</div>
         <q-space />
@@ -36,6 +36,7 @@
 
 <script>
 import { MixinForm } from '../mixins/MixinForm';
+import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: 'FormPay',
@@ -47,9 +48,8 @@ export default {
       mutating: 0,
 
       gql: {
-        create: 'eventType.create',
-        update: 'eventType.update',
-        query: 'eventType',
+        create: '/role/add',
+        update: '',
       },
 
       edata: {},
@@ -57,15 +57,23 @@ export default {
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    this.edata = this.selected[0] ? { ...this.selected[0] } : {};
   },
   methods: {
     preSave() {},
+    async goSubmit() {
+      if (this.edata.id) {
+        const res = await http.put(`/role/rename/${this.edata.id}?name=${this.edata.name}`);
+        if (res.res) {
+          this.$emit('submit', this.edata);
+          return this.hide();
+        } else {
+          alert('修改失败');
+        }
+      } else {
+        this.submit();
+      }
+    },
   },
 };
 </script>

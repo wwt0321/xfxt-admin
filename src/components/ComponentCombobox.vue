@@ -1,5 +1,14 @@
 <template>
-  <q-select v-bind="$attrs" v-on="$listeners" :options="filteredOptions" @filter="filter" use-input />
+  <q-select v-bind="$attrs" v-on="$listeners" :options="filteredOptions" @filter="filter" use-input>
+    <slot v-for="(_, name) in $slots" :name="name" :slot="name" />
+    <template v-slot:no-option>
+      <q-item>
+        <q-item-section class="text-grey">
+          没有匹配的选项
+        </q-item-section>
+      </q-item>
+    </template>
+  </q-select>
 </template>
 
 <script>
@@ -26,11 +35,16 @@ export default {
           return;
         }
 
-        const filterFn = this.$attrs.emitValue ? (v) => v.label.indexOf(val) >= 0 : (v) => v.indexOf(val) >= 0;
+        const filterFn = (v) => v.label.indexOf(val) >= 0;
 
         this.filteredOptions = options.filter(filterFn);
       });
     },
+  },
+
+  mounted() {
+    // 初始化过滤后的选项，否则当直接设置控件值时，会出现没有匹配项，直接显示 value 的情况
+    this.filteredOptions = this.$attrs.options;
   },
 };
 </script>

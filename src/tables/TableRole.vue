@@ -17,14 +17,14 @@
     >
       <q-td slot="body-cell-impose" slot-scope="{ row }">
         <div class="operation">
-          <div>每日上限：{{ row.everyday }}；单词限额：{{ row.everytime }}</div>
-          <div style="margin-left:55px;" class="operation-title" @click="showAstrict(row.id)">设置</div>
+          <div>每日上限：{{ row.max || 0 }}；单次限额：{{ row.limit || 0 }}</div>
+          <div style="margin-left:55px;" class="operation-title" @click="showAstrict(row)">设置</div>
         </div>
       </q-td>
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
-          <div class="operation-title" @click="showSubsidies(row.id)">补贴发放</div>
-          <div style="margin-left:25px" class="operation-title" @click="showEdit(row.id)">编辑</div>
+          <div class="operation-title" @click="showSubsidies(row)">补贴发放</div>
+          <div style="margin-left:25px" class="operation-title" @click="showEdit(row)">编辑</div>
           <div style="margin-left:25px;color:#ea5e5e" class="operation-title">删除</div>
         </div>
       </q-td>
@@ -36,6 +36,7 @@
         :primary-id="primaryId"
         @hide="hideEdit"
         @submit="refresh"
+        :selected="selected"
         style="width: 410px;"
         :locked="locked"
         :type="filters.type"
@@ -48,6 +49,7 @@
         :primary-id="primaryId"
         @hide="hideAstrict"
         @submit="refresh"
+        :selected="selected"
         style="width: 410px;"
         :locked="locked"
         :type="filters.type"
@@ -60,6 +62,7 @@
         :primary-id="primaryId"
         @hide="hideSubsidies"
         @submit="refresh"
+        :selected="selected"
         style="width: 410px;"
         :locked="locked"
         :type="filters.type"
@@ -73,6 +76,7 @@ import FormRole from 'src/forms/FormRole.vue';
 import { MixinTable } from '../mixins/MixinTable';
 import FormAstrict from 'src/forms/FormAstrict.vue';
 import FormSubsidies from 'src/forms/FormSubsidies.vue';
+import { http } from '../utils/luch-request/index.js';
 export default {
   components: { FormRole, FormAstrict, FormSubsidies },
   name: 'TableAnnouncement',
@@ -86,26 +90,19 @@ export default {
 
       // 改动数据的接口名称
       gql: {
-        create: '',
+        create: '/role/add',
         update: '',
       },
 
       // 表格列设置
       columns: [
         { name: 'id', label: '序号', field: 'id', align: 'center' },
-        { name: 'user', label: '角色', field: 'user', align: 'center' },
+        { name: 'name', label: '角色', field: 'name', align: 'center' },
         { name: 'impose', label: '消费限制', field: 'impose', align: 'center' },
         { name: 'operation', label: '操作', field: 'operation', align: 'center' },
       ],
 
-      rows: [
-        {
-          id: '1',
-          user: '测试',
-          everyday: '500',
-          everytime: '500',
-        },
-      ],
+      rows: [],
 
       // 查询条件
       filters: {},
@@ -123,24 +120,42 @@ export default {
   },
 
   methods: {
-    refresh() {},
-    showEdit(id) {
-      this.isShow.edit = true;
-      this.primaryId = id;
+    async refresh() {
+      this.selected = [];
+      let url = `/role/get?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}`;
+      if (this.filters) {
+        Object.keys(this.filters).forEach((v) => {
+          if (this.filters[v] || this.filters[v] == 0) {
+            url += `&${v}=${this.filters[v]}`;
+          }
+        });
+      }
+      const roles = await http.get(url);
+      this.rows = roles.data.list;
+      this.pagination.rowsNumber = roles.data.num;
     },
-    showAstrict(id) {
+    showEdit(row) {
+      this.isShow.edit = true;
+      this.selected[0] = row;
+    },
+    showAstrict(row) {
       this.isShow.astrict = true;
-      this.primaryId = id;
+      this.selected[0] = row;
     },
     hideAstrict() {
       this.isShow.astrict = false;
     },
-    showSubsidies(id) {
+    showSubsidies(row) {
       this.isShow.subsidies = true;
-      this.primaryId = id;
+      this.selected[0] = row;
     },
     hideSubsidies() {
       this.isShow.subsidies = false;
+    },
+    goSearch(select) {
+      this.pagination.page = 1;
+      this.filters = select;
+      this.refresh();
     },
   },
 };

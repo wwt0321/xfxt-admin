@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit">
+    <q-form @submit="goSubmit">
       <div class="row top">
         <div class="dialog-title">消费限制</div>
         <q-space />
@@ -10,7 +10,7 @@
         <!-- 表单内容 -->
         <div class="dialog-main row">
           <span class="dialog-main-title">角色：</span>
-          <div class="dialog-main-title" style="font-weight:600">测试</div>
+          <div class="dialog-main-title" style="font-weight:600">{{ edata.name }}</div>
         </div>
         <div class="dialog-main row">
           <span class="dialog-main-title">每日消费上限：</span>
@@ -20,7 +20,7 @@
             stack-label
             dense
             placeholder="请输每日消费上限金额"
-            v-model="edata.name"
+            v-model="edata.max"
             :rules="[(v) => !!v]"
           />
         </div>
@@ -31,8 +31,8 @@
             outlined
             stack-label
             dense
-            placeholder="请输入单词消费金额"
-            v-model="edata.name"
+            placeholder="请输入单次消费金额"
+            v-model="edata.limit"
             :rules="[(v) => !!v]"
           />
         </div>
@@ -52,6 +52,7 @@
 
 <script>
 import { MixinForm } from '../mixins/MixinForm';
+import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: 'FormEventType',
@@ -73,15 +74,19 @@ export default {
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    this.edata = this.selected[0] ? { ...this.selected[0] } : {};
   },
   methods: {
     preSave() {},
+    async goSubmit() {
+      const res = await http.put(`/role/set/${this.edata.id}?limit=${this.edata.limit}&max=${this.edata.max}`);
+      if (res.res) {
+        this.$emit('submit', this.edata);
+        return this.hide();
+      } else {
+        alert('设置失败');
+      }
+    },
   },
 };
 </script>

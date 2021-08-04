@@ -3,8 +3,15 @@
     <div class="top row">
       <div class="top-title">商户管理</div>
       <div class="top-filter">
-        <q-input outlined dense class="top-filter-input" style="width:250px" placeholder="请输入商户名称"></q-input>
-        <q-btn class="top-filter-btn" color="secondary" label="查询"></q-btn>
+        <q-input
+          v-model="searches.name"
+          outlined
+          dense
+          class="top-filter-input"
+          style="width:250px"
+          placeholder="请输入商户名称"
+        ></q-input>
+        <q-btn class="top-filter-btn" color="secondary" label="查询" @click="search"></q-btn>
       </div>
     </div>
     <div class="body" :style="bodyheight">
@@ -27,6 +34,9 @@ export default {
       bodyheight: {
         height: '',
       },
+      searches: {
+        name: '',
+      },
     };
   },
   created() {
@@ -40,6 +50,9 @@ export default {
     },
     addShop() {
       this.$refs.table.showCreate();
+    },
+    search() {
+      this.$refs.table.goSearch(this.searches);
     },
   },
 };

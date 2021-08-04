@@ -99,8 +99,8 @@ export default {
 
     this.$store.commit('dicts/set', dicts);
 
-    const enums = await this.grequest('enums');
-    this.$store.commit('enums/set', enums);
+    //const enums = await this.grequest('enums');
+    this.$store.commit('enums/set', []);
 
     const { configs } = await this.grequest('configs');
     const pairs = configs.nodes.map((v) => [v.key, { value: v.value, comment: v.comment }]);

@@ -15,14 +15,14 @@
             outlined
             stack-label
             dense
-            placeholder="请输入金额"
+            placeholder="请输入方案名称"
             v-model="edata.name"
             :rules="[(v) => !!v]"
           />
         </div>
         <q-btn
           class="dialog-main-btn"
-          type="primary"
+          type="submit"
           :loading="mutating > 0"
           :disabled="mutating > 0"
           label="保存"
@@ -46,22 +46,24 @@ export default {
       mutating: 0,
 
       gql: {
-        create: 'eventType.create',
+        create: '/distribute/plan',
         update: 'eventType.update',
         query: 'eventType',
       },
 
-      edata: {},
+      edata: {
+        name: '',
+      },
     };
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    let ids = this.selected.map((v) => v.id);
+    let roleNames = this.selected.map((v) => v.name);
+    let allowances = this.selected.map((v) => v.allowance);
+    this.edata.ids = ids.join(',');
+    this.edata.roleNames = roleNames.join(',');
+    this.edata.allowances = allowances.join(',');
   },
   methods: {
     preSave() {},

@@ -2,7 +2,7 @@
   <q-card>
     <q-form @submit="submit">
       <div class="row top">
-        <div class="dialog-title">{{ primaryId ? '编辑' : '新增' }}用户</div>
+        <div class="dialog-title">{{ edata.id ? '编辑' : '新增' }}用户</div>
         <q-space />
         <q-img class="dialog-close" src="../assets/close.svg" @click="hide"></q-img>
       </div>
@@ -16,7 +16,7 @@
             stack-label
             dense
             placeholder="请输入工号"
-            v-model="edata.name"
+            v-model="edata.workNo"
             :rules="[(v) => !!v]"
           />
         </div>
@@ -40,7 +40,7 @@
             stack-label
             dense
             placeholder="请输入手机号"
-            v-model="edata.name"
+            v-model="edata.phoneNum"
             :rules="[(v) => !!v]"
           />
         </div>
@@ -52,15 +52,15 @@
             dense
             emit-value
             map-options
-            v-model="model"
-            :options="options"
+            v-model="edata.roleId"
+            :options="roles"
             :rules="[(v) => !!v]"
           />
         </div>
 
         <q-btn
           class="dialog-main-btn"
-          type="primary"
+          type="submit"
           :loading="mutating > 0"
           :disabled="mutating > 0"
           label="保存"
@@ -73,6 +73,7 @@
 
 <script>
 import { MixinForm } from '../mixins/MixinForm';
+import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: 'FormEventType',
@@ -84,44 +85,31 @@ export default {
       eventCategories: [],
 
       gql: {
-        create: 'eventType.create',
-        update: 'eventType.update',
-        query: 'eventType',
+        create: '/user/add',
+        update: '/user/update',
       },
 
-      options: [
-        {
-          label: '全部',
-          value: 0,
-        },
-        {
-          label: '医生',
-          value: 1,
-        },
-        {
-          label: '护士',
-          value: 2,
-        },
-        {
-          label: '主任',
-          value: 3,
-        },
-      ],
+      roles: [],
 
       edata: {},
     };
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    this.edata = this.selected[0] ? { ...this.selected[0] } : {};
+    if (!this.selected[0]) {
+      this.edata.balance = 0;
+      this.edata.allowance = 0;
+    }
+    const roles = await http.get(`/role/get?limit=${999}&page=${1}`);
+    roles.data.list.forEach((v) => {
+      v.value = v.id;
+      v.label = v.name;
+    });
+    this.roles = roles.data.list;
   },
   methods: {
-    preSave() {},
+    async preSave() {},
   },
 };
 </script>

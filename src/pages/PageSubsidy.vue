@@ -2,21 +2,16 @@
   <div class="q-pa-lg row app " :style="conheight">
     <div class="body-left" :style="bodyheight1">
       <div class="top-title">补贴方案设置</div>
-      <div class="top-filter">
-        <div class="top-filter-title">医生：</div>
-        <q-input outlined dense class="top-filter-input" placeholder="请输入金额"></q-input>
-      </div>
-      <div class="top-filter">
-        <div class="top-filter-title">护士：</div>
-        <q-input outlined dense class="top-filter-input" placeholder="请输入金额"></q-input>
-      </div>
-      <div class="top-filter">
-        <div class="top-filter-title">主任：</div>
-        <q-input outlined dense class="top-filter-input" placeholder="请输入金额"></q-input>
-      </div>
-      <div class="top-filter">
-        <div class="top-filter-title">其他：</div>
-        <q-input outlined dense class="top-filter-input" placeholder="请输入金额"></q-input>
+      <div class="top-filter" v-for="(v, n) in roles" :key="n">
+        <div class="top-filter-title">{{ v.name }}：</div>
+        <q-input
+          v-model="allowances[n].allowance"
+          type="number"
+          outlined
+          dense
+          class="top-filter-input"
+          placeholder="请输入金额"
+        ></q-input>
       </div>
       <q-btn class="top-filter-btn " color="secondary" label="补贴发放"></q-btn>
       <q-btn class="top-filter-btn " color="secondary" label="保存方案" @click="showScheme"></q-btn>
@@ -27,13 +22,20 @@
     </div>
     <!-- 补贴发放 -->
     <q-dialog v-model="isShow.scheme" no-backdrop-dismiss>
-      <form-scheme v-if="isShow.scheme" @hide="hideScheme" @submit="refresh" style="width: 430px;"></form-scheme>
+      <form-scheme
+        v-if="isShow.scheme"
+        @hide="hideScheme"
+        @submit="refresh"
+        :selected="allowances"
+        style="width: 430px;"
+      ></form-scheme>
     </q-dialog>
   </div>
 </template>
 <script>
 import TableSubsidy from 'src/tables/TableSubsidy.vue';
 import FormScheme from 'src/forms/FormScheme.vue';
+import { http } from '../utils/luch-request/index.js';
 export default {
   components: { TableSubsidy, FormScheme },
   name: 'PageHome',
@@ -55,9 +57,20 @@ export default {
       isShow: {
         scheme: false,
       },
+      roles: [],
+      allowances: [],
     };
   },
-  created() {
+  async mounted() {
+    const roles = await http.get(`/role/get?limit=${999}&page=${1}`);
+    this.roles = roles.data.list;
+    roles.data.list.forEach((v) => {
+      this.allowances.push({
+        id: v.id,
+        name: v.name,
+        allowance: 0,
+      });
+    });
     window.addEventListener('resize', this.getHeight);
     this.getHeight();
   },

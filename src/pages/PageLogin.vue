@@ -17,13 +17,28 @@
           <div class="body-main-box-title">
             消费管理系统后台
           </div>
-          <div style="margin-top:16px">
-            <q-input class="body-main-box-input" outlined v-model="text" placeholder="请输入账号" />
-          </div>
-          <div style="margin-top:40px">
-            <q-input class="body-main-box-input" outlined v-model="password" placeholder="请输入密码" />
-          </div>
-          <q-btn class="body-main-box-btn" type="submit" color="primary" label="登录" />
+          <q-form @submit="login">
+            <div style="margin-top:16px">
+              <q-input
+                class="body-main-box-input"
+                outlined
+                v-model="username"
+                placeholder="请输入账号"
+                :rules="[(v) => !!v]"
+              />
+            </div>
+            <div style="margin-top:40px">
+              <q-input
+                class="body-main-box-input"
+                outlined
+                type="password"
+                v-model="password"
+                placeholder="请输入密码"
+                :rules="[(v) => !!v]"
+              />
+            </div>
+            <q-btn class="body-main-box-btn" type="submit" color="primary" label="登录" />
+          </q-form>
         </div>
       </div>
     </div>
@@ -32,6 +47,8 @@
 
 <script>
 import { MixinCommon } from '../mixins/MixinCommon';
+import { tokenKey } from '../../config.js';
+import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: '',
@@ -53,15 +70,12 @@ export default {
 
   methods: {
     async login() {
-      const token = await this.exchangeToken({
-        username: this.username,
-        password: this.password,
-      });
-      if (!token) {
-        this.$q.notify({
-          message: '登录失败',
-        });
-      }
+      let params = new FormData();
+      params.append('username', this.username);
+      params.append('password', this.password);
+      const token = await http.post('/system/login', params);
+      localStorage.setItem(tokenKey, token.data);
+      this.$router.replace('/home');
     },
     getHeight() {
       this.conheight.height = window.innerHeight + 'px';

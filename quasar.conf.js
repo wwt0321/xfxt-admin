@@ -75,6 +75,10 @@ module.exports = function(/* ctx */) {
           target: 'http://test.nbyunyi.cn:9391',
           changeOrigin: true,
         },
+        '/console': {
+          target: 'https://xfxt.test.nbyunyi.cn',
+          changeOrigin: true,
+        },
       },
     },
 

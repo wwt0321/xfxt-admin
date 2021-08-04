@@ -3,6 +3,7 @@ import { MixinRequest } from './MixinRequest';
 import { MixinCommon } from './MixinCommon';
 import { MixinUtils } from './MixinUtils';
 import { camelCase } from 'change-case';
+import { http } from '../utils/luch-request/index.js';
 
 export const MixinForm = {
   mixins: [MixinUtils, MixinRequest, MixinCommon],
@@ -34,25 +35,24 @@ export const MixinForm = {
 
     // 添加或保存数据，需要自定义 this.gqlUpdate 和 this.gqlCreate
     async submit() {
-      const mutation = this.primaryId ? this.gql.update : this.gql.create;
-      // 如果是数字类型，把默认值改回 null
-      // this.edata = map((v, k) => (this.initEdata[k] === 0 && v === '' ? null : v))(this.edata);
-      console.log(this.preSave);
-      this.preSave?.();
       console.log(this.edata);
-      const variables = this.primaryId
-        ? {
-            id: this.primaryId || undefined,
-            patch: this.edata,
-          }
-        : {
-            input: this.edata,
-          };
-      if (!this.dryMode) {
-        await this.grequest(mutation, variables);
+
+      let params = new FormData();
+      Object.keys(this.edata).forEach((v) => {
+        params.append(v, this.edata[v] == 0 ? 0 : this.edata[v] || '');
+      });
+      let res = '';
+      if (this.edata.id) {
+        res = await http.put(this.gql.update, params);
+      } else {
+        res = await http.post(this.gql.create, params);
       }
-      this.$emit('submit', this.edata);
-      return this.hide();
+      if (res.res) {
+        this.$emit('submit', this.edata);
+        return this.hide();
+      } else {
+        alert(this.edata.id ? '编辑失败' : '新建失败');
+      }
     },
 
     async load(returnOnly = false) {

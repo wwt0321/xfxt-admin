@@ -29,9 +29,16 @@
       </q-td>
       <q-td style="text-align:center;" slot="body-cell-balance" slot-scope="{ row }">
         <div class="operation">
-          <div>{{ row.balance }}</div>
+          <div>￥{{ row.balance }}</div>
           <div class="row">
             <div class="operation-title" @click="showPay(row.id)">充值</div>
+          </div>
+        </div>
+      </q-td>
+      <q-td style="text-align:center;" slot="body-cell-allowance" slot-scope="{ row }">
+        <div class="operation">
+          <div>￥{{ row.allowance }}</div>
+          <div class="row">
             <div style="margin-left:20px" @click="showSubsidy(row.id)" class="operation-title">补贴</div>
           </div>
         </div>
@@ -40,7 +47,7 @@
         <div class="operation">
           <div class="operation-title" @click="showRechargeRecord(row.id)">充值记录</div>
           <div class="operation-title" @click="showExpense(row.id)">消费记录</div>
-          <div class="operation-title" @click="showEdit(row.id)">编辑</div>
+          <div class="operation-title" @click="showEdit(row)">编辑</div>
           <div class="operation-title" style="color:#ea5e5e">删除</div>
         </div>
       </q-td>
@@ -49,7 +56,7 @@
     <q-dialog v-model="isShow.edit" no-backdrop-dismiss>
       <form-person
         v-if="isShow.edit"
-        :primary-id="primaryId"
+        :selected="selected"
         @hide="hideEdit"
         @submit="refresh"
         style="width: 390px;"
@@ -131,6 +138,8 @@ import FormSubsidy from 'src/forms/FormSubsidy.vue';
 import FormBindingCard from 'src/forms/FormBindingCard.vue';
 import FormRechargeRecord from 'src/forms/FormRechargeRecord.vue';
 import FormExpense from 'src/forms/FormExpense.vue';
+import { http } from '../utils/luch-request/index.js';
+
 export default {
   components: { FormPerson, FormPay, FormSubsidy, FormBindingCard, FormRechargeRecord, FormExpense },
   name: 'TablePerson',
@@ -152,35 +161,17 @@ export default {
       // 表格列设置
       columns: [
         { name: 'id', label: '序号', field: 'id', align: 'center' },
-        { name: 'number', label: '工号', field: 'number', align: 'center' },
+        { name: 'workNo', label: '工号', field: 'workNo', align: 'center' },
         { name: 'name', label: '姓名', field: 'name', align: 'center' },
-        { name: 'phone', label: '手机号', field: 'phone', align: 'center' },
-        { name: 'role', label: '角色', field: 'role', align: 'center' },
-        { name: 'card', label: '绑定卡号', field: 'card', align: 'center' },
+        { name: 'phoneNum', label: '手机号', field: 'phoneNum', align: 'center' },
+        { name: 'roleId', label: '角色', field: 'roleId', align: 'center' },
+        { name: 'cardNo', label: '绑定卡号', field: 'cardNo', align: 'center' },
         { name: 'balance', label: '余额', field: 'balance', align: 'center' },
+        { name: 'allowance', label: '补贴', field: 'allowance', align: 'center' },
         { name: 'operation', label: '操作', field: 'operation', align: 'center' },
       ],
 
-      rows: [
-        {
-          id: '1',
-          number: '001',
-          name: '张三',
-          phone: '18658246353',
-          role: '医生',
-          card: '11111',
-          balance: '100.00/60.00',
-        },
-        {
-          id: '2',
-          number: '002',
-          name: '李四',
-          phone: '18658246353',
-          role: '护士',
-          card: '',
-          balance: '100.00/60.00',
-        },
-      ],
+      rows: [],
 
       // 查询条件
       filters: {},
@@ -201,7 +192,20 @@ export default {
   },
 
   methods: {
-    refresh() {},
+    async refresh() {
+      this.selected = [];
+      let url = `/user/get?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}`;
+      if (this.filters) {
+        Object.keys(this.filters).forEach((v) => {
+          if (this.filters[v] || this.filters[v] == 0) {
+            url += `&${v}=${this.filters[v]}`;
+          }
+        });
+      }
+      const users = await http.get(url);
+      this.rows = users.data.list;
+      this.pagination.rowsNumber = users.data.num;
+    },
     showPay(id) {
       this.isShow.pay = true;
       this.primaryId = id;
@@ -223,9 +227,9 @@ export default {
     hideBinding() {
       this.isShow.binding = false;
     },
-    showEdit(id) {
+    showEdit(row) {
       this.isShow.edit = true;
-      this.primaryId = id;
+      this.selected = [row];
     },
     showRechargeRecord(id) {
       this.isShow.rechargeRecord = true;
@@ -240,6 +244,11 @@ export default {
     },
     hideExpemse() {
       this.isShow.expense = false;
+    },
+    goSearch(select) {
+      this.pagination.page = 1;
+      this.filters = select;
+      this.refresh();
     },
   },
 };

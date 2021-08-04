@@ -100,6 +100,7 @@ export const MixinTable = {
     showCreate() {
       this.isShow.edit = true;
       this.primaryId = undefined;
+      this.selected = [];
     },
     hideEdit() {
       this.isShow.edit = false;

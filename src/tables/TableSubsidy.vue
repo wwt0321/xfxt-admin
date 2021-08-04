@@ -44,6 +44,7 @@
 <script>
 import FormAllowancei from 'src/forms/FormAllowancei.vue';
 import { MixinTable } from '../mixins/MixinTable';
+import { http } from '../utils/luch-request/index.js';
 export default {
   components: { FormAllowancei },
   name: 'TableAnnouncement',
@@ -93,7 +94,7 @@ export default {
   },
 
   methods: {
-    refresh() {},
+    async refresh() {},
     showEdit(id) {
       this.isShow.edit = true;
       this.primaryId = id;

@@ -1,8 +1,8 @@
 <template>
   <q-card>
-    <q-form @submit="submit">
+    <q-form @submit="goSubmit">
       <div class="row top">
-        <div class="dialog-title">{{ primaryId ? '编辑' : '新增' }}商户</div>
+        <div class="dialog-title">{{ edata.id ? '编辑' : '新增' }}商户</div>
         <q-space />
         <q-img class="dialog-close" src="../assets/close.svg" @click="hide"></q-img>
       </div>
@@ -15,29 +15,39 @@
             outlined
             stack-label
             dense
-            placeholder="请输补贴金额"
+            placeholder="请输商户名称"
             v-model="edata.name"
             :rules="[(v) => !!v]"
           />
         </div>
-        <div class="dialog-main row" v-for="(v, index) in edata.number" :key="index">
+        <div class="dialog-main row" v-for="(v, index) in edata.nums" :key="index">
           <span class="dialog-main-title">刷卡机编号：</span>
           <q-input
-            classsssss="dialog-main-input"
+            class="dialog-main-input"
             outlined
             stack-label
             dense
             placeholder="请输刷卡机编号"
-            v-model="v.number"
+            v-model="edata.nums[index]"
+            @input="$forceUpdate()"
             :rules="[(v) => !!v]"
           />
           <q-space></q-space>
           <q-icon
             class="dialog-main-icon"
+            v-if="index == edata.nums.length - 1"
             color="secondary"
             size="30px"
             name="add_circle_outline"
-            @click="addShop()"
+            @click="addNums()"
+          ></q-icon>
+          <q-icon
+            class="dialog-main-icon"
+            v-if="edata.nums.length > 1"
+            color="secondary"
+            size="30px"
+            name="remove_circle_outline"
+            @click="delNums(index)"
           ></q-icon>
         </div>
         <q-btn
@@ -55,6 +65,7 @@
 
 <script>
 import { MixinForm } from '../mixins/MixinForm';
+import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: 'FormEventType',
@@ -66,31 +77,46 @@ export default {
       eventCategories: [],
 
       gql: {
-        create: 'eventType.create',
-        update: 'eventType.update',
-        query: 'eventType',
+        create: '/merchants/add',
+        update: '/merchants/update',
       },
 
       edata: {
-        id: '1',
-        name: '测试',
-        number: [{ number: '281928282828289' }, { number: '382828282822828' }],
+        nums: [],
       },
     };
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    console.log(this.selected);
+    this.edata = this.selected[0] ? { ...this.selected[0] } : {};
+    this.edata.nums = this.edata.nums && this.edata.nums.length ? this.edata.nums : [''];
   },
   methods: {
     preSave() {},
-    addShop() {
-      this.edata.number.push({ number: '' });
+    addNums() {
+      this.edata.nums.push('');
+      console.log(this.edata);
+      this.$forceUpdate();
+    },
+    delNums(index) {
+      this.edata.nums.splice(index, 1);
+      this.$forceUpdate();
+    },
+    async goSubmit() {
+      this.edata.posIds = this.edata.nums.join(';');
+      //if (this.edata.id) {
+      //  const res = await http.put(`/role/rename/${this.edata.id}?name=${this.edata.name}`);
+      //  if (res.res) {
+      //    this.$emit('submit', this.edata);
+      //    return this.hide();
+      //  } else {
+      //    alert('修改失败');
+      //  }
+      //} else {
+      this.gql.update += `/${this.edata.id}`;
+      this.submit();
+      //}
     },
   },
 };
@@ -132,7 +158,7 @@ export default {
 }
 .dialog-main-input {
   height: 40px;
-  width: 213px;
+  width: 180px;
 }
 .dialog-main-btn {
   margin-top: 12px;

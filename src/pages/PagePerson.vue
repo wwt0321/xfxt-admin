@@ -4,14 +4,28 @@
       <div class="top-title">用户管理</div>
       <div class="top-filter">
         <div class="top-filter-title">工号：</div>
-        <q-input outlined dense class="top-filter-input" placeholder="请输入工号"></q-input>
+        <q-input v-model="searches.workNo" outlined dense class="top-filter-input" placeholder="请输入工号"></q-input>
         <div class="top-filter-title">姓名：</div>
-        <q-input outlined dense class="top-filter-input" placeholder="请输入姓名"></q-input>
+        <q-input v-model="searches.name" outlined dense class="top-filter-input" placeholder="请输入姓名"></q-input>
         <div class="top-filter-title" style="width:56px">手机号：</div>
-        <q-input outlined dense class="top-filter-input" placeholder="请输入手机号"></q-input>
+        <q-input
+          v-model="searches.phoneNum"
+          outlined
+          dense
+          class="top-filter-input"
+          placeholder="请输入手机号"
+        ></q-input>
         <div class="top-filter-title" style="width:56px">角色：</div>
-        <q-select class="top-filter-input" outlined dense emit-value map-options v-model="model" :options="options" />
-        <q-btn class="top-filter-btn" color="secondary" label="查询"></q-btn>
+        <q-select
+          v-model="searches.roleId"
+          class="top-filter-input"
+          outlined
+          dense
+          emit-value
+          map-options
+          :options="roles"
+        />
+        <q-btn class="top-filter-btn" color="secondary" label="查询" @click="search"></q-btn>
       </div>
     </div>
     <div class="body" :style="bodyheight">
@@ -22,6 +36,7 @@
 </template>
 <script>
 import TablePerson from 'src/tables/TablePerson.vue';
+import { http } from '../utils/luch-request/index.js';
 export default {
   components: { TablePerson },
   name: 'PageHome',
@@ -34,30 +49,24 @@ export default {
       bodyheight: {
         height: '',
       },
-      model: 0,
-      options: [
-        {
-          label: '全部',
-          value: 0,
-        },
-        {
-          label: '医生',
-          value: 1,
-        },
-        {
-          label: '护士',
-          value: 2,
-        },
-        {
-          label: '主任',
-          value: 3,
-        },
-      ],
+      searches: {
+        workNo: '',
+        name: '',
+        phoneNum: '',
+        roleId: '',
+      },
+      roles: [],
     };
   },
-  created() {
+  async mounted() {
     window.addEventListener('resize', this.getHeight);
     this.getHeight();
+    const roles = await http.get(`/role/get?limit=${999}&page=${1}`);
+    roles.data.list.forEach((v) => {
+      v.value = v.id;
+      v.label = v.name;
+    });
+    this.roles = [{ value: '', label: '全部' }, ...roles.data.list];
   },
   methods: {
     getHeight() {
@@ -66,6 +75,9 @@ export default {
     },
     addPerson() {
       this.$refs.table.showCreate();
+    },
+    search() {
+      this.$refs.table.goSearch(this.searches);
     },
   },
 };

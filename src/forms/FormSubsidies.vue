@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit">
+    <q-form @submit="goSubmit">
       <div class="row top">
         <div class="dialog-title">补贴发放</div>
         <q-space />
@@ -10,7 +10,7 @@
         <!-- 表单内容 -->
         <div class="dialog-main row">
           <span class="dialog-main-title">角色：</span>
-          <div class="dialog-main-title" style="font-weight:600">测试</div>
+          <div class="dialog-main-title" style="font-weight:600">{{ edata.name }}</div>
         </div>
         <div class="dialog-main row">
           <span class="dialog-main-title">金额：</span>
@@ -20,7 +20,7 @@
             stack-label
             dense
             placeholder="请输补贴金额"
-            v-model="edata.name"
+            v-model="amount"
             :rules="[(v) => !!v]"
           />
         </div>
@@ -39,6 +39,7 @@
 
 <script>
 import { MixinForm } from '../mixins/MixinForm';
+import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: 'FormEventType',
@@ -56,19 +57,33 @@ export default {
       },
 
       edata: {},
+      amount: '',
     };
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    this.edata = this.selected[0] ? { ...this.selected[0] } : {};
   },
   methods: {
     preSave() {},
+    async goSubmit() {
+      if (this.edata.id) {
+        let params = new FormData();
+        params.append('amount', this.amount);
+        params.append('roleId', this.edata.id);
+        params.append('roleName', this.edata.name);
+        const res = await http.post('/distribute/role', params);
+        if (res.res) {
+          this.$emit('submit', this.edata);
+          this.hide();
+          return alert('发放补贴成功');
+        } else {
+          alert('发放补贴失败');
+        }
+      } else {
+        this.submit();
+      }
+    },
   },
 };
 </script>
