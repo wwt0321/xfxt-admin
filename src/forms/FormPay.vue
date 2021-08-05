@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit">
+    <q-form @submit="goSubmit">
       <div class="row top">
         <div class="dialog-title">用户充值</div>
         <q-space />
@@ -10,11 +10,11 @@
         <!-- 表单内容 -->
         <div class="dialog-main row">
           <div class="dialog-main-title">姓名：</div>
-          <div class="dialog-main-title-main">张三</div>
+          <div class="dialog-main-title-main">{{ edata.name }}</div>
         </div>
         <div class="dialog-main row">
           <div class="dialog-main-title">工号</div>
-          <div class="dialog-main-title-main">000001</div>
+          <div class="dialog-main-title-main">{{ edata.workNo }}</div>
         </div>
         <div class="dialog-main row">
           <div class="dialog-main-title">金额：</div>
@@ -24,14 +24,14 @@
             stack-label
             dense
             placeholder="请输入金额"
-            v-model="edata.name"
+            v-model="amount"
             :rules="[(v) => !!v]"
           />
         </div>
         <div class="dialog-main row">
           <div class="dialog-main-title">类型：</div>
-          <q-radio dense v-model="shape" val="0" label="充值" />
-          <q-radio v-model="shape" val="1" label="退费" />
+          <q-radio dense v-model="shape" :val="1" label="充值" />
+          <q-radio v-model="shape" :val="2" label="退费" />
         </div>
 
         <q-btn
@@ -49,6 +49,7 @@
 
 <script>
 import { MixinForm } from '../mixins/MixinForm';
+import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: 'FormPay',
@@ -56,7 +57,7 @@ export default {
   props: ['selected', 'type'],
   data() {
     return {
-      shape: '0',
+      shape: 1,
       mutating: 0,
 
       gql: {
@@ -66,19 +67,30 @@ export default {
       },
 
       edata: {},
+      amount: '',
     };
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    this.edata = this.selected[0] ? { ...this.selected[0] } : {};
   },
   methods: {
     preSave() {},
+    async goSubmit() {
+      let params = new FormData();
+      params.append('amount', this.amount);
+      params.append('workNo', this.edata.workNo);
+      params.append('name', this.edata.name);
+      params.append('type', parseInt(this.shape));
+      const res = await http.post('/account/recharge', params);
+      if (res.res) {
+        this.$emit('submit', this.edata);
+        this.hide();
+        return alert(this.shape == 1 ? '充值成功' : '退费成功');
+      } else {
+        alert(this.shape == 1 ? '充值失败' : '退费失败');
+      }
+    },
   },
 };
 </script>

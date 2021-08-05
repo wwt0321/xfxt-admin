@@ -105,18 +105,8 @@ export default {
     },
     async goSubmit() {
       this.edata.posIds = this.edata.nums.join(';');
-      //if (this.edata.id) {
-      //  const res = await http.put(`/role/rename/${this.edata.id}?name=${this.edata.name}`);
-      //  if (res.res) {
-      //    this.$emit('submit', this.edata);
-      //    return this.hide();
-      //  } else {
-      //    alert('修改失败');
-      //  }
-      //} else {
       this.gql.update += `/${this.edata.id}`;
       this.submit();
-      //}
     },
   },
 };

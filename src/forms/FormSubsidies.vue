@@ -67,21 +67,17 @@ export default {
   methods: {
     preSave() {},
     async goSubmit() {
-      if (this.edata.id) {
-        let params = new FormData();
-        params.append('amount', this.amount);
-        params.append('roleId', this.edata.id);
-        params.append('roleName', this.edata.name);
-        const res = await http.post('/distribute/role', params);
-        if (res.res) {
-          this.$emit('submit', this.edata);
-          this.hide();
-          return alert('发放补贴成功');
-        } else {
-          alert('发放补贴失败');
-        }
+      let params = new FormData();
+      params.append('amount', this.amount);
+      params.append('roleId', this.edata.id);
+      params.append('roleName', this.edata.name);
+      const res = await http.post('/distribute/role', params);
+      if (res.res) {
+        this.$emit('submit', this.edata);
+        this.hide();
+        return alert('发放补贴成功');
       } else {
-        this.submit();
+        alert('发放补贴失败');
       }
     },
   },

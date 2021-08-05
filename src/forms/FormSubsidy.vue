@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit">
+    <q-form @submit="goSubmit">
       <div class="row top">
         <div class="dialog-title">用户补贴</div>
         <q-space />
@@ -10,11 +10,11 @@
         <!-- 表单内容 -->
         <div class="dialog-main row">
           <div class="dialog-main-title">姓名：</div>
-          <div class="dialog-main-title-main">张三</div>
+          <div class="dialog-main-title-main">{{ edata.name }}</div>
         </div>
         <div class="dialog-main row">
           <div class="dialog-main-title">工号：</div>
-          <div class="dialog-main-title-main">000001</div>
+          <div class="dialog-main-title-main">{{ edata.workNo }}</div>
         </div>
         <div class="dialog-main row">
           <div class="dialog-main-title">补贴金额：</div>
@@ -24,7 +24,7 @@
             stack-label
             dense
             placeholder="请输入金额"
-            v-model="edata.name"
+            v-model="amount"
             :rules="[(v) => !!v]"
           />
         </div>
@@ -44,6 +44,7 @@
 
 <script>
 import { MixinForm } from '../mixins/MixinForm';
+import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: 'FormPay',
@@ -60,19 +61,29 @@ export default {
       },
 
       edata: {},
+      amount: '',
     };
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    this.edata = this.selected[0] ? { ...this.selected[0] } : {};
   },
   methods: {
     preSave() {},
+    async goSubmit() {
+      let params = new FormData();
+      params.append('amount', this.amount);
+      params.append('workNo', this.edata.workNo);
+      params.append('username', this.edata.name);
+      const res = await http.post('/distribute/user', params);
+      if (res.res) {
+        this.$emit('submit', this.edata);
+        this.hide();
+        return alert('发放补贴成功');
+      } else {
+        alert('发放补贴失败');
+      }
+    },
   },
 };
 </script>

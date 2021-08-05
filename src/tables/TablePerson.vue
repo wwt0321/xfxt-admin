@@ -31,7 +31,7 @@
         <div class="operation">
           <div>￥{{ row.balance }}</div>
           <div class="row">
-            <div class="operation-title" @click="showPay(row.id)">充值</div>
+            <div class="operation-title" @click="showPay(row)">充值</div>
           </div>
         </div>
       </q-td>
@@ -39,7 +39,7 @@
         <div class="operation">
           <div>￥{{ row.allowance }}</div>
           <div class="row">
-            <div style="margin-left:20px" @click="showSubsidy(row.id)" class="operation-title">补贴</div>
+            <div style="margin-left:20px" @click="showSubsidy(row)" class="operation-title">补贴</div>
           </div>
         </div>
       </q-td>
@@ -69,6 +69,7 @@
     <q-dialog v-model="isShow.pay" no-backdrop-dismiss>
       <form-pay
         v-if="isShow.pay"
+        :selected="selected"
         :primary-id="primaryId"
         @hide="hidePay"
         @submit="refresh"
@@ -82,6 +83,7 @@
     <q-dialog v-model="isShow.subsidy" no-backdrop-dismiss>
       <form-subsidy
         v-if="isShow.subsidy"
+        :selected="selected"
         :primary-id="primaryId"
         @hide="hideSubsidy"
         @submit="refresh"
@@ -94,6 +96,7 @@
     <q-dialog v-model="isShow.binding" no-backdrop-dismiss>
       <form-binding-card
         v-if="isShow.binding"
+        :selected="selected"
         :primary-id="primaryId"
         @hide="hideBinding"
         @submit="refresh"
@@ -206,16 +209,16 @@ export default {
       this.rows = users.data.list;
       this.pagination.rowsNumber = users.data.num;
     },
-    showPay(id) {
+    showPay(row) {
       this.isShow.pay = true;
-      this.primaryId = id;
+      this.selected = [row];
     },
     hidePay() {
       this.isShow.pay = false;
     },
-    showSubsidy(id) {
+    showSubsidy(row) {
       this.isShow.subsidy = true;
-      this.primaryId = id;
+      this.selected = [row];
     },
     hideSubsidy() {
       this.isShow.subsidy = false;

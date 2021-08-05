@@ -17,7 +17,7 @@
     >
       <q-td slot="body-cell-impose" slot-scope="{ row }">
         <div class="operation">
-          <div>每日上限：{{ row.max || 0 }}；单次限额：{{ row.limit || 0 }}</div>
+          <div>每日上限：￥{{ row.max || 0 }}；单次限额：￥{{ row.limit || 0 }}</div>
           <div style="margin-left:55px;" class="operation-title" @click="showAstrict(row)">设置</div>
         </div>
       </q-td>

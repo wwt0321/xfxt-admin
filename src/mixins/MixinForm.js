@@ -49,7 +49,8 @@ export const MixinForm = {
       }
       if (res.res) {
         this.$emit('submit', this.edata);
-        return this.hide();
+        this.hide();
+        return alert(this.edata.id ? '编辑成功' : '新建成功');
       } else {
         alert(this.edata.id ? '编辑失败' : '新建失败');
       }

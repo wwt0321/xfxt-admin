@@ -25,7 +25,6 @@
             map-options
             v-model="model"
             :options="options"
-            :rules="[(v) => !!v]"
           />
         </div>
         <table-top-up />
@@ -45,13 +44,12 @@ export default {
   props: ['selected', 'type'],
   data() {
     return {
-      shape: '0',
       mutating: 0,
-      model: 0,
+      model: '',
       options: [
         {
           label: '全部',
-          value: 0,
+          value: '',
         },
         {
           label: '充值',
