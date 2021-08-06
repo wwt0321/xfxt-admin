@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit">
+    <q-form @submit="submit('')">
       <div class="row top">
         <div class="dialog-title">{{ edata.id ? '编辑' : '新增' }}用户</div>
         <q-space />
@@ -97,6 +97,7 @@ export default {
 
   async mounted() {
     this.edata = this.selected[0] ? { ...this.selected[0] } : {};
+    this.edata.state = this.edata.id ? this.edata.state : 1;
     if (!this.selected[0]) {
       this.edata.balance = 0;
       this.edata.allowance = 0;

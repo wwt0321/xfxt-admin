@@ -24,8 +24,11 @@
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
           <div class="operation-title" @click="showSubsidies(row)">补贴发放</div>
-          <div style="margin-left:25px" class="operation-title" @click="showEdit(row)">编辑</div>
-          <div style="margin-left:25px;color:#ea5e5e" class="operation-title">删除</div>
+          <div style="margin:0 25px" class="operation-title" @click="showEdit(row)">编辑</div>
+          <div class="operation-title" v-if="row.state == 2" @click="changeState(row, 1)">启用</div>
+          <div class="operation-title" style="color:#ea5e5e" v-if="row.state == 1" @click="changeState(row, 2)">
+            禁用
+          </div>
         </div>
       </q-td>
     </q-table>
@@ -98,6 +101,13 @@ export default {
       columns: [
         { name: 'id', label: '序号', field: 'id', align: 'center' },
         { name: 'name', label: '角色', field: 'name', align: 'center' },
+        {
+          name: 'state',
+          label: '状态',
+          field: 'state',
+          align: 'center',
+          format: (v) => (v == 1 ? '已启用' : '已禁用'),
+        },
         { name: 'impose', label: '消费限制', field: 'impose', align: 'center' },
         { name: 'operation', label: '操作', field: 'operation', align: 'center' },
       ],
@@ -155,6 +165,18 @@ export default {
     goSearch(select) {
       this.pagination.page = 1;
       this.filters = select;
+      this.refresh();
+    },
+    async changeState(row, state) {
+      let params = new FormData();
+      params.append('id', row.id);
+      params.append('state', state);
+      let res = await http.put(`/role/updateState/${row.id}`, params);
+      if (res.res) {
+        alert(`${state == 1 ? '启用' : '禁用'}成功`);
+      } else {
+        alert(`${state == 1 ? '启用' : '禁用'}失败`);
+      }
       this.refresh();
     },
   },

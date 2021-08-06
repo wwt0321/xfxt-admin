@@ -21,13 +21,13 @@
           />
         </div>
         <div class="dialog-main row" v-for="(v, index) in edata.nums" :key="index">
-          <span class="dialog-main-title">刷卡机编号：</span>
+          <span class="dialog-main-title">消费机编号：</span>
           <q-input
             class="dialog-main-input"
             outlined
             stack-label
             dense
-            placeholder="请输刷卡机编号"
+            placeholder="请输消费机编号"
             v-model="edata.nums[index]"
             @input="$forceUpdate()"
             :rules="[(v) => !!v]"
@@ -91,6 +91,7 @@ export default {
     console.log(this.selected);
     this.edata = this.selected[0] ? { ...this.selected[0] } : {};
     this.edata.nums = this.edata.nums && this.edata.nums.length ? this.edata.nums : [''];
+    this.edata.state = this.edata.id ? this.edata.state : 1;
   },
   methods: {
     preSave() {},
@@ -106,7 +107,7 @@ export default {
     async goSubmit() {
       this.edata.posIds = this.edata.nums.join(';');
       this.gql.update += `/${this.edata.id}`;
-      this.submit();
+      this.submit('');
     },
   },
 };

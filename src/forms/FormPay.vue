@@ -31,7 +31,7 @@
         <div class="dialog-main row">
           <div class="dialog-main-title">类型：</div>
           <q-radio dense v-model="shape" :val="1" label="充值" />
-          <q-radio v-model="shape" :val="2" label="退费" />
+          <q-radio v-model="shape" :val="2" label="提现" />
         </div>
 
         <q-btn

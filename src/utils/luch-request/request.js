@@ -100,6 +100,7 @@ export default class Request {
    * @returns {Promise<unknown>}
    */
   async request(options = {}) {
+    let that = this;
     options.baseUrl = this.config.baseUrl;
     options.dataType = options.dataType || this.config.dataType;
     options.responseType = options.responseType || this.config.responseType;
@@ -142,7 +143,6 @@ export default class Request {
         mergeUrl += mergeUrl.indexOf('?') === -1 ? `?${paramsH}` : `&${paramsH}`;
       }
       _config.url = mergeUrl;
-      console.log(555, _config);
       axios(_config)
         .then((res) => {
           console.log('res:', res);
@@ -150,9 +150,15 @@ export default class Request {
           resolve(data);
         })
         .catch(({ response, request }) => {
-          console.log(response);
-          if (response && response.data && response.data.indexOf('error:') > -1) {
-            return resolve([response.data.errors]);
+          console.log('err:', response);
+          if (response.status == 403) {
+            if (!localStorage.logout) {
+              alert('登录过期，请重新登录');
+            }
+            localStorage.to = window.location.hash.replace('#', '');
+            localStorage.logout = 1;
+            location.href = window.location.href.split('#')[0] + '#/login';
+            return false;
           }
 
           return resolve([response || request]);

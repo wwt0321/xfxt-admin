@@ -58,6 +58,7 @@ export default {
 
   async mounted() {
     this.edata = this.selected[0] ? { ...this.selected[0] } : {};
+    this.edata.state = this.edata.id ? this.edata.state : 1;
   },
   methods: {
     preSave() {},
@@ -71,7 +72,7 @@ export default {
           alert('修改失败');
         }
       } else {
-        this.submit();
+        this.submit('');
       }
     },
   },

@@ -75,13 +75,15 @@ export default {
       params.append('password', this.password);
       const token = await http.post('/system/login', params);
       localStorage.setItem(tokenKey, token.data);
-      this.$router.replace('/home');
+      this.$router.replace(localStorage.to ? localStorage.to : '/home');
     },
     getHeight() {
       this.conheight.height = window.innerHeight + 'px';
     },
   },
-  mounted() {},
+  mounted() {
+    localStorage.removeItem('logout');
+  },
 };
 </script>
 

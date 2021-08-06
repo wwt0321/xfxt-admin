@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit">
+    <q-form @submit="submit('')">
       <div class="row top">
         <div class="dialog-title">绑定卡号</div>
         <q-space />

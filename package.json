@@ -1,8 +1,8 @@
 {
   "name": "base-admin",
   "version": "1.0.0-SNAPSHOT",
-  "description": "PLACEHOLDER",
-  "productName": "PLACEHOLDER",
+  "description": "消费系统管理平台",
+  "productName": "消费系统管理平台",
   "author": "xiongliding <fairplay1986@gmail.com>",
   "private": true,
   "scripts": {

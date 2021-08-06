@@ -34,7 +34,7 @@ export const MixinForm = {
     },
 
     // 添加或保存数据，需要自定义 this.gqlUpdate 和 this.gqlCreate
-    async submit() {
+    async submit(tip) {
       console.log(this.edata);
 
       let params = new FormData();
@@ -50,9 +50,9 @@ export const MixinForm = {
       if (res.res) {
         this.$emit('submit', this.edata);
         this.hide();
-        return alert(this.edata.id ? '编辑成功' : '新建成功');
+        alert(this.edata.id ? `${tip || '编辑'}成功` : `${tip || '新建'}成功`);
       } else {
-        alert(this.edata.id ? '编辑失败' : '新建失败');
+        alert(this.edata.id ? `${tip || '编辑'}失败` : `${tip || '新建'}失败`);
       }
     },
 

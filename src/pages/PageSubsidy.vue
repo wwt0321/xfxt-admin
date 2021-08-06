@@ -11,21 +11,22 @@
           dense
           class="top-filter-input"
           placeholder="请输入金额"
+          :rules="[(v) => v >= 0]"
         ></q-input>
       </div>
-      <q-btn class="top-filter-btn " color="secondary" label="补贴发放"></q-btn>
+      <q-btn class="top-filter-btn " color="secondary" label="补贴发放" @click="grant"></q-btn>
       <q-btn class="top-filter-btn " color="secondary" label="保存方案" @click="showScheme"></q-btn>
     </div>
     <q-space></q-space>
     <div class="body-right" :style="bodyheight2">
-      <table-subsidy />
+      <table-subsidy ref="mychild" />
     </div>
-    <!-- 补贴发放 -->
+    <!-- 保存方案 -->
     <q-dialog v-model="isShow.scheme" no-backdrop-dismiss>
       <form-scheme
         v-if="isShow.scheme"
         @hide="hideScheme"
-        @submit="refresh"
+        @submit="$refs.mychild.refresh"
         :selected="allowances"
         style="width: 430px;"
       ></form-scheme>
@@ -38,7 +39,7 @@ import FormScheme from 'src/forms/FormScheme.vue';
 import { http } from '../utils/luch-request/index.js';
 export default {
   components: { TableSubsidy, FormScheme },
-  name: 'PageHome',
+  name: 'PageSubsidy',
   data() {
     return {
       //屏幕高度
@@ -75,16 +76,57 @@ export default {
     this.getHeight();
   },
   methods: {
+    refresh() {},
     getHeight() {
       this.conheight.height = window.innerHeight - 66 + 'px';
       this.bodyheight1.height = window.innerHeight - 144 + 'px';
       this.bodyheight2.height = window.innerHeight - 144 + 'px';
     },
     showScheme() {
+      let sum = 0;
+      for (let i = 0; i < this.allowances.length; i++) {
+        if (this.allowances[i].allowance < 0) {
+          return alert('补贴金额不能小于0');
+        }
+        sum += parseFloat(this.allowances[i].allowance);
+      }
+      if (sum == 0) {
+        return alert('至少得有一个角色补贴金额大于0');
+      }
       this.isShow.scheme = true;
     },
     hideScheme() {
       this.isShow.scheme = false;
+    },
+    async grant() {
+      let sum = 0;
+      for (let i = 0; i < this.allowances.length; i++) {
+        if (this.allowances[i].allowance < 0) {
+          return alert('补贴金额不能小于0');
+        }
+        sum += parseFloat(this.allowances[i].allowance);
+      }
+      if (sum == 0) {
+        return alert('至少得有一个角色补贴金额大于0');
+      }
+      let ids = this.allowances.map((v) => v.id);
+      let roleNames = this.allowances.map((v) => v.name);
+      let allowances = this.allowances.map((v) => v.allowance || 0);
+      let edata = {};
+      edata.ids = ids.join(',');
+      edata.roleNames = roleNames.join(',');
+      edata.allowances = allowances.join(',');
+      console.log(edata);
+      let params = new FormData();
+      Object.keys(edata).forEach((v) => {
+        params.append(v, edata[v] == 0 ? 0 : edata[v] || '');
+      });
+      let res = await http.post('/distribute/plan', params);
+      if (res.res) {
+        alert('发放补贴成功');
+      } else {
+        alert('发放补贴失败');
+      }
     },
   },
 };
@@ -112,13 +154,13 @@ export default {
 }
 .top-filter {
   margin-top: 20px;
-  height: 40px;
   display: flex;
   align-items: center;
 }
 .top-filter-title {
+  width: 40%;
   min-width: 42px;
-  line-height: 20px;
+  line-height: 40px;
   font-size: 14px;
   font-family: PingFang SC, PingFang SC-Normal;
   color: #333333;

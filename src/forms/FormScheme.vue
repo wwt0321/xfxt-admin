@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit">
+    <q-form @submit="submit('保存')">
       <div class="row top">
         <div class="dialog-title">保存方案</div>
         <q-space />
@@ -46,9 +46,8 @@ export default {
       mutating: 0,
 
       gql: {
-        create: '/distribute/plan',
-        update: 'eventType.update',
-        query: 'eventType',
+        create: '/plan/add',
+        update: '',
       },
 
       edata: {
@@ -60,7 +59,7 @@ export default {
   async mounted() {
     let ids = this.selected.map((v) => v.id);
     let roleNames = this.selected.map((v) => v.name);
-    let allowances = this.selected.map((v) => v.allowance);
+    let allowances = this.selected.map((v) => v.allowance || 0);
     this.edata.ids = ids.join(',');
     this.edata.roleNames = roleNames.join(',');
     this.edata.allowances = allowances.join(',');

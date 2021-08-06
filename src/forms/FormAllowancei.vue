@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit">
+    <q-form @submit="goSubmit">
       <div class="row top">
         <div class="dialog-title">编辑方案</div>
         <q-space />
@@ -20,40 +20,17 @@
             :rules="[(v) => !!v]"
           />
         </div>
-        <div class="dialog-main row">
-          <div class="dialog-main-title">医生：</div>
+        <div class="dialog-main row" v-for="(v, n) in roles" :key="n">
+          <div class="dialog-main-title">{{ v.label }}：</div>
           <q-input
             class="dialog-main-input"
+            type="number"
             outlined
             stack-label
             dense
             placeholder="请输入金额"
-            v-model="edata.name"
-            :rules="[(v) => !!v]"
-          />
-        </div>
-        <div class="dialog-main row">
-          <div class="dialog-main-title">护士</div>
-          <q-input
-            class="dialog-main-input"
-            outlined
-            stack-label
-            dense
-            placeholder="请输入金额"
-            v-model="edata.name"
-            :rules="[(v) => !!v]"
-          />
-        </div>
-        <div class="dialog-main row">
-          <div class="dialog-main-title">主任</div>
-          <q-input
-            class="dialog-main-input"
-            outlined
-            stack-label
-            dense
-            placeholder="请输入金额"
-            v-model="edata.name"
-            :rules="[(v) => !!v]"
+            v-model="v.allowance"
+            :rules="[(v) => v >= 0]"
           />
         </div>
         <q-btn
@@ -71,6 +48,7 @@
 
 <script>
 import { MixinForm } from '../mixins/MixinForm';
+import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: 'FormPay',
@@ -81,41 +59,53 @@ export default {
       shape: '0',
       mutating: 0,
       model: 0,
-      options: [
-        {
-          label: '全部',
-          value: 0,
-        },
-        {
-          label: '充值',
-          value: 1,
-        },
-        {
-          label: '退费',
-          value: 2,
-        },
-      ],
-
       gql: {
-        create: 'eventType.create',
-        update: 'eventType.update',
-        query: 'eventType',
+        create: '',
+        update: '/plan/update',
       },
 
       edata: {},
+      roles: [],
     };
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    this.edata = this.selected[0] ? { ...this.selected[0] } : {};
+    const roles = await http.get(`/role/get?limit=${999}&page=${1}`);
+    roles.data.list.forEach((v) => {
+      v.value = v.id;
+      v.label = v.name;
+    });
+    let roleids = this.edata.roleIds ? this.edata.roleIds.split(',') : [];
+    let allowances = this.edata.allowances ? this.edata.allowances.split(',') : [];
+    roles.data.list.forEach((v, n) => {
+      let index = roleids.findIndex((r) => r == v.id);
+      if (index > -1) {
+        v.allowance = parseFloat(allowances[index]);
+      } else {
+        v.allowance = 0;
+      }
+    });
+    this.roles = roles.data.list;
+    console.log(this.roles);
   },
   methods: {
     preSave() {},
+    async goSubmit() {
+      let sum = 0;
+      this.roles.forEach((v) => {
+        sum += parseFloat(v.allowance);
+      });
+      if (sum == 0) {
+        return alert('至少得有一个角色补贴金额大于0');
+      }
+      this.edata.ids = this.roles.map((v) => v.value).join(',');
+      this.edata.roleNames = this.roles.map((v) => v.label).join(',');
+      this.edata.allowances = this.roles.map((v) => v.allowance || 0).join(',');
+      console.log(this.edata);
+      this.gql.update += `/${this.edata.id}`;
+      this.submit('');
+    },
   },
 };
 </script>

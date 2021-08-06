@@ -20,9 +20,16 @@
       </q-td>
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
-          <div style="margin-left:25px" class="operation-title">发放</div>
-          <div style="margin-left:25px" class="operation-title" @click="showEdit(row.id)">编辑</div>
-          <div style="margin-left:25px;color:#ea5e5e" class="operation-title">删除</div>
+          <div style="margin-left:25px" class="operation-title" :loading="loading > 0" @click="send(row)">发放</div>
+          <div style="margin-left:25px" class="operation-title" @click="showEdit(row)">编辑</div>
+          <div
+            style="margin-left:25px;color:#ea5e5e"
+            class="operation-title"
+            :loading="loading > 0"
+            @click="goDel(row)"
+          >
+            删除
+          </div>
         </div>
       </q-td>
     </q-table>
@@ -33,6 +40,7 @@
         :primary-id="primaryId"
         @hide="hideEdit"
         @submit="refresh"
+        :selected="selected"
         style="width: 410px;"
         :locked="locked"
         :type="filters.type"
@@ -66,19 +74,11 @@ export default {
       columns: [
         { name: 'id', label: '序号', field: 'id', align: 'center' },
         { name: 'name', label: '方案名称', field: 'name', align: 'center' },
-        { name: 'body', label: '方案内容', field: 'body', align: 'center' },
+        { name: 'contain', label: '方案内容', field: 'contain', align: 'center' },
         { name: 'operation', label: '操作', field: 'operation', align: 'center' },
       ],
 
-      rows: [
-        {
-          id: '1',
-          name: '方案一',
-          doctor: 100,
-          nurse: 100,
-          director: 100,
-        },
-      ],
+      rows: [],
 
       // 查询条件
       filters: {},
@@ -94,10 +94,54 @@ export default {
   },
 
   methods: {
-    async refresh() {},
-    showEdit(id) {
+    async refresh() {
+      this.selected = [];
+      let url = `/plan/get?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}`;
+      if (this.filters) {
+        Object.keys(this.filters).forEach((v) => {
+          if (this.filters[v] || this.filters[v] == 0) {
+            url += `&${v}=${this.filters[v]}`;
+          }
+        });
+      }
+      const plans = await http.get(url);
+      this.rows = plans.data.list;
+      this.pagination.rowsNumber = plans.data.num;
+    },
+    showEdit(row) {
       this.isShow.edit = true;
-      this.primaryId = id;
+      this.selected[0] = row;
+    },
+    async send(row) {
+      let result = confirm(`确认发放“${row.name}”补贴?`);
+      if (result) {
+        this.loading++;
+        let params = new FormData();
+        params.append('id', row.id);
+        let res = await http.post('/distribute/planID', params);
+        if (res.res) {
+          alert('发放补贴成功');
+        } else {
+          alert('发放补贴失败');
+        }
+        this.loading--;
+      }
+    },
+    async goDel(row) {
+      let result = confirm(`确认删除“${row.name}”?`);
+      if (result) {
+        this.loading++;
+        let params = new FormData();
+        params.append('id', row.id);
+        let res = await http.delete(`/plan/delete/${row.id}`, params);
+        if (res.res) {
+          alert('删除成功');
+          this.refresh();
+        } else {
+          alert('删除失败');
+        }
+        this.loading--;
+      }
     },
   },
 };

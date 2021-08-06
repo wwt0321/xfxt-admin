@@ -17,7 +17,7 @@ const getHeaders = (headers = {}) => {
 
 const gaxios = (queryName, variables) => {
   if (!queries[queryName]) {
-    return alert(`查询 ${queryName} 未实现`);
+    //return alert(`查询 ${queryName} 未实现`);
   }
   return axios({
     method: 'POST',
