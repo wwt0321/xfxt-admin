@@ -21,9 +21,12 @@
 
 <script>
 import { MixinTable } from '../mixins/MixinTable';
+import { date } from 'quasar';
+import { http } from '../utils/luch-request/index.js';
 export default {
   name: 'TableAnnouncement',
   mixins: [MixinTable],
+  props: ['search'],
   data() {
     return {
       edata: {},
@@ -39,22 +42,20 @@ export default {
 
       // 表格列设置
       columns: [
-        { name: 'time', label: '时间', field: 'time', align: 'center' },
+        {
+          name: 'time',
+          label: '时间',
+          field: 'time',
+          align: 'center',
+          format: (v) => date.formatDate(v, 'YYYY-MM-DD HH:mm:ss'),
+        },
         { name: 'name', label: '姓名', field: 'name', align: 'center' },
-        { name: 'money', label: '消费金额', field: 'name', align: 'center' },
+        { name: 'amount', label: '消费金额', field: 'amount', align: 'center', format: (v) => `￥${v}` },
         { name: 'content', label: '消防内容', field: 'content', align: 'center' },
         { name: 'shop', label: '消费商户', field: 'shop', align: 'center' },
       ],
 
-      rows: [
-        {
-          time: '',
-          name: '张三',
-          money: 20,
-          content: '套餐',
-          shop: '员工食堂',
-        },
-      ],
+      rows: [],
 
       // 查询条件
       filters: {},
@@ -68,7 +69,21 @@ export default {
   },
 
   methods: {
-    refresh() {},
+    async refresh() {
+      this.selected = [];
+      let url = `/statistics/user?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}&type=3`;
+      if (this.search) {
+        let filters = { ...this.search };
+        Object.keys(filters).forEach((v) => {
+          if (filters[v] || filters[v] == 0) {
+            url += `&${v}=${filters[v]}`;
+          }
+        });
+      }
+      const users = await http.get(url);
+      this.rows = users.data.list;
+      this.pagination.rowsNumber = users.data.num;
+    },
   },
 };
 </script>

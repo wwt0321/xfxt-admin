@@ -21,9 +21,12 @@
 
 <script>
 import { MixinTable } from '../mixins/MixinTable';
+import { date } from 'quasar';
+import { http } from '../utils/luch-request/index.js';
 export default {
   name: 'TableAnnouncement',
   mixins: [MixinTable],
+  props: ['search'],
   data() {
     return {
       edata: {},
@@ -39,20 +42,25 @@ export default {
 
       // 表格列设置
       columns: [
-        { name: 'time', label: '时间', field: 'time', align: 'center' },
-        { name: 'name', label: '姓名', field: 'name', align: 'center' },
-        { name: 'money', label: '补贴金额', field: 'money', align: 'center' },
-        { name: 'style', label: '补贴类型', field: 'style', align: 'center' },
-      ],
-
-      rows: [
         {
-          time: '',
-          name: '张三',
-          money: 20,
-          style: '补贴',
+          name: 'time',
+          label: '时间',
+          field: 'time',
+          align: 'center',
+          format: (v) => date.formatDate(v, 'YYYY-MM-DD HH:mm:ss'),
+        },
+        { name: 'userName', label: '姓名', field: 'userName', align: 'center' },
+        { name: 'amount', label: '补贴金额', field: 'amount', align: 'center', format: (v) => `￥${v}` },
+        {
+          name: 'type',
+          label: '补贴类型',
+          field: 'type',
+          align: 'center',
+          format: (v) => (v == 1 ? '个人补贴' : v == 2 ? '角色补贴' : '方案补贴'),
         },
       ],
+
+      rows: [],
 
       // 查询条件
       filters: {},
@@ -66,7 +74,21 @@ export default {
   },
 
   methods: {
-    refresh() {},
+    async refresh() {
+      this.selected = [];
+      let url = `/statistics/user?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}&type=2`;
+      if (this.search) {
+        let filters = { ...this.search };
+        Object.keys(filters).forEach((v) => {
+          if (filters[v] || filters[v] == 0) {
+            url += `&${v}=${filters[v]}`;
+          }
+        });
+      }
+      const users = await http.get(url);
+      this.rows = users.data.list;
+      this.pagination.rowsNumber = users.data.num;
+    },
   },
 };
 </script>

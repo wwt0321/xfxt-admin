@@ -24,11 +24,11 @@
     <div v-show="all" class="body" :style="bodyheight">
       <div class="all-top row">
         <q-tabs v-model="tab" align="left" active-color="secondary">
-          <q-tab class="all-tab" name="tab1" label="今天" />
-          <q-tab class="all-tab" name="tab2" label="昨天" />
-          <q-tab class="all-tab" name="tab3" label="近7日" />
-          <q-tab class="all-tab" name="tab4" label="近30日" />
-          <q-tab class="all-tab" name="tab5" label="今年" />
+          <q-tab class="all-tab" name="tab1" label="今天" @click="timeChange(1)" />
+          <q-tab class="all-tab" name="tab2" label="昨天" @click="timeChange(2)" />
+          <q-tab class="all-tab" name="tab3" label="近7日" @click="timeChange(3)" />
+          <q-tab class="all-tab" name="tab4" label="近30日" @click="timeChange(4)" />
+          <q-tab class="all-tab" name="tab5" label="今年" @click="timeChange(5)" />
         </q-tabs>
         <q-space></q-space>
         <q-input
@@ -95,7 +95,9 @@
         </q-tabs>
       </div>
       <div style="padding:20px">
-        <table-all />
+        <table-statistical-person-pay :search="filters" v-show="tab2 == 'tab1'" />
+        <table-statistical-person-subsidy :search="filters" v-show="tab2 == 'tab2'" />
+        <table-statistical-consumption :search="filters" v-show="tab2 == 'tab3'" />
       </div>
     </div>
     <!--人员统计-->
@@ -199,6 +201,7 @@ export default {
       //人员统计
       subsidy: true,
       consumption: false,
+      filters: {},
     };
   },
   created() {
@@ -223,6 +226,23 @@ export default {
         this.all = false;
         this.persons = false;
         this.shops = true;
+      }
+    },
+    timeChange(type) {
+      let today = Date.parse(new Date()),
+        oneday = 1000 * 60 * 60 * 24;
+      if (type == 1) {
+        this.filters.startTime = today;
+        this.filters.endTime = today + oneday;
+      } else if (type == 2) {
+        this.filters.startTime = today - oneday;
+        this.filters.endTime = today;
+      } else if (type == 3) {
+        this.filters.startTime = today - 6 * oneday;
+        this.filters.endTime = today + oneday;
+      } else if (type == 4) {
+        this.filters.startTime = Date.parse(new Date(new Date().getFullYear + '-01-01'));
+        this.filters.endTime = today + oneday;
       }
     },
   },

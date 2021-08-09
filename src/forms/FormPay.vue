@@ -86,9 +86,9 @@ export default {
       if (res.res) {
         this.$emit('submit', this.edata);
         this.hide();
-        return alert(this.shape == 1 ? '充值成功' : '退费成功');
+        return alert(this.shape == 1 ? '充值成功' : '提现成功');
       } else {
-        alert(this.shape == 1 ? '充值失败' : '退费失败');
+        alert(this.shape == 1 ? '充值失败' : '提现失败');
       }
     },
   },

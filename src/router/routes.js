@@ -51,7 +51,7 @@ const routes = [
         component: () => import('src/pages/PageStatistical.vue'),
       },
     ],
-    //beforeEnter: helperGuard,
+    beforeEnter: helperGuard,
   },
   {
     path: '*',

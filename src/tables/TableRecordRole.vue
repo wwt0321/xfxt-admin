@@ -2,47 +2,32 @@
   <div>
     <div class="top-filter">
       <div class="top-filter-title">角色：</div>
-      <q-input outlined dense class="top-filter-input" placeholder="请输入角色名称"></q-input>
+      <q-input v-model="filters.name" outlined dense class="top-filter-input" placeholder="请输入角色名称"></q-input>
+      <div class="top-filter-title" style="width:72px;">发放时间：</div>
       <q-input
-        style="width:200px;margin-top:20px"
+        style="width:200px;"
+        type="date"
         outlined
         dense
         stack-label
-        v-model="time"
+        v-model="filters.startTime"
         placeholder="请选择开始时间"
         mask="####-##-##"
-        :rules="[isValidDateString || '日期格式错误']"
         clearable
-      >
-        <template v-slot:append>
-          <q-icon name="event" class="cursor-pointer">
-            <q-popup-proxy ref="qDateProxyHappen" transition-show="scale" transition-hide="scale">
-              <q-date minimal v-model="time" @input="$refs.qDateProxyHappen.hide()" />
-            </q-popup-proxy>
-          </q-icon>
-        </template>
-      </q-input>
+      ></q-input>
       <div class="top-filter-line">-</div>
       <q-input
-        style="width:200px;margin-top:20px;margin-right:20px"
+        style="width:200px;margin-right:20px"
+        type="date"
         outlined
         dense
         stack-label
-        v-model="time"
+        v-model="filters.endTime"
         placeholder="请选择结束时间"
         mask="####-##-##"
-        :rules="[isValidDateString || '日期格式错误']"
         clearable
-      >
-        <template v-slot:append>
-          <q-icon name="event" class="cursor-pointer">
-            <q-popup-proxy ref="qDateProxyHappen" transition-show="scale" transition-hide="scale">
-              <q-date minimal v-model="time" @input="$refs.qDateProxyHappen.hide()" />
-            </q-popup-proxy>
-          </q-icon>
-        </template>
-      </q-input>
-      <q-btn class="top-filter-btn" color="secondary" label="查询"></q-btn>
+      ></q-input>
+      <q-btn class="top-filter-btn" color="secondary" label="查询" @click="refresh"></q-btn>
     </div>
     <!-- 数据列表 -->
     <q-table
@@ -59,13 +44,20 @@
       separator="cell"
       flat
     >
-      <q-td slot="body-cell-body" slot-scope="{ row }">
-        <div class="operation">医生：{{ row.doctor }}；护士：{{ row.nurse }}，主任：{{ row.director }}</div>
-      </q-td>
-      <q-td slot="body-cell-operation">
+      <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
-          <div style="margin-left:25px" class="operation-title">退补</div>
-          <div style="margin-left:25px" class="operation-title">重新补贴</div>
+          <div
+            style="margin-left:25px"
+            class="operation-title"
+            :style="row.state == 1 ? '' : 'color:grey'"
+            :loading="loading > 0"
+            @click="refund(row)"
+          >
+            退补
+          </div>
+          <!--<div style="margin-left:25px" class="operation-title" :loading="loading > 0" @click="regrant(row)">
+            重新补贴
+          </div>-->
         </div>
       </q-td>
     </q-table>
@@ -75,6 +67,7 @@
 <script>
 import { MixinTable } from '../mixins/MixinTable';
 import { date } from 'quasar';
+import { http } from '../utils/luch-request/index.js';
 export default {
   name: 'TableAnnouncement',
   mixins: [MixinTable],
@@ -95,40 +88,33 @@ export default {
       // 表格列设置
       columns: [
         {
-          name: 'date',
+          name: 'time',
           label: '补贴发放时间',
-          field: 'id',
+          field: 'time',
           align: 'center',
           format: (v) => date.formatDate(v, 'YYYY-MM-DD HH:mm:ss'),
         },
-        { name: 'name', label: '角色', field: 'name', align: 'center' },
-        { name: 'money', label: '补贴金额', field: 'money', align: 'center' },
-        { name: 'way', label: '补贴途径', field: 'way', align: 'center' },
-        { name: 'state', label: '补贴当前状态', field: 'state', align: 'center' },
+        { name: 'roleName', label: '角色', field: 'roleName', align: 'center' },
+        { name: 'amount', label: '补贴金额', field: 'amount', align: 'center' },
+        { name: 'way', label: '补贴途径', field: 'way', align: 'center', format: (v) => '角色补贴' },
+        {
+          name: 'state',
+          label: '补贴当前状态',
+          field: 'state',
+          align: 'center',
+          format: (v) => (v == 2 ? '已退补' : '补贴成功'),
+        },
         { name: 'operation', label: '操作', field: 'operation', align: 'center' },
       ],
 
-      rows: [
-        {
-          id: '1',
-          date: '',
-          name: '医生',
-          way: '角色补贴',
-          state: '补贴成功',
-          money: 100,
-        },
-        {
-          id: '2',
-          date: '',
-          name: '护士',
-          way: '角色补贴',
-          state: '已退补',
-          money: 100,
-        },
-      ],
+      rows: [],
 
       // 查询条件
-      filters: {},
+      filters: {
+        name: '',
+        startTime: '',
+        endTime: '',
+      },
       //编辑弹出框
       isShow: {},
     };
@@ -139,7 +125,23 @@ export default {
   },
 
   methods: {
-    refresh() {},
+    async refresh() {
+      this.selected = [];
+      let url = `/record/role?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}`;
+      if (this.filters) {
+        let filters = { ...this.filters };
+        filters.startTime = filters.startTime ? new Date(filters.startTime).getTime() : '';
+        filters.endTime = filters.endTime ? new Date(filters.endTime).getTime() + 1000 * 60 * 60 * 24 : '';
+        Object.keys(filters).forEach((v) => {
+          if (filters[v] || filters[v] == 0) {
+            url += `&${v}=${filters[v]}`;
+          }
+        });
+      }
+      const res = await http.get(url);
+      this.rows = res.data.list;
+      this.pagination.rowsNumber = res.data.num;
+    },
     /**
      * 检验日期字符串是否符合标准 ####-##-##
      */
@@ -149,6 +151,42 @@ export default {
       }
 
       return isValidDateString(str);
+    },
+    async refund(row) {
+      if (row.state == 1) {
+        let result = confirm(`确认对“${row.roleName}”进行退补?`);
+        if (result) {
+          this.loading++;
+          let params = new FormData();
+          params.append('id', row.id);
+          const res = await http.put('/distribute/refundByRole', params);
+          if (res.res) {
+            this.refresh();
+            alert('退补成功');
+          } else {
+            alert('退补失败');
+          }
+          this.loading--;
+        }
+      }
+    },
+    async regrant(row) {
+      let result = confirm(`确认对“${row.roleName}”进行重新补贴?`);
+      if (result) {
+        this.loading++;
+        let params = new FormData();
+        params.append('roleId', row.roleId);
+        params.append('roleName', row.roleName);
+        params.append('amount', row.amount);
+        const res = await http.post('/distribute/role', params);
+        if (res.res) {
+          this.refresh();
+          alert('重新补贴成功');
+        } else {
+          alert('重新补贴失败');
+        }
+        this.loading--;
+      }
     },
   },
 };

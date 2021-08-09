@@ -2,7 +2,7 @@
   <q-card>
     <q-form @submit="submit('')">
       <div class="row top">
-        <div class="dialog-title">充值记录</div>
+        <div class="dialog-title">消费记录</div>
         <q-space />
         <q-img class="dialog-close" src="../assets/close.svg" @click="hide"></q-img>
       </div>
@@ -10,13 +10,13 @@
         <!-- 表单内容 -->
         <div class="dialog-main-title row">
           <span style="margin-left:10px">姓名：</span>
-          <span style="margin-left:8px;font-size:600">张三</span>
+          <span style="margin-left:8px;font-size:600">{{ edata.name }}</span>
           <span style="margin-left:50px">工号：</span>
-          <span style="margin-left:8px;font-size:600">00001</span>
+          <span style="margin-left:8px;font-size:600">{{ edata.workNo }}</span>
           <span style="margin-left:50px">手机号：</span>
-          <span style="margin-left:8px;font-size:600">15321456543</span>
+          <span style="margin-left:8px;font-size:600">{{ edata.phoneNum }}</span>
         </div>
-        <table-expense />
+        <table-expense ref="table" :work="edata.workNo" />
       </q-card-section>
     </q-form>
   </q-card>
@@ -48,12 +48,10 @@ export default {
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    this.edata = this.selected[0] ? { ...this.selected[0] } : {};
+    setTimeout(() => {
+      this.$refs.table.refresh();
+    });
   },
   methods: {
     preSave() {},

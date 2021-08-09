@@ -60,7 +60,7 @@
               <q-space></q-space>
               <div class="card-body-box-cz-input">
                 <q-radio style="font-size:14px" v-model="shape" val="line1" label="充值" />
-                <q-radio style="margin-left:20px;font-size:14px" v-model="shape" val="line2" label="退费" />
+                <q-radio style="margin-left:20px;font-size:14px" v-model="shape" val="line2" label="提现" />
                 <q-radio style="margin-left:20px;font-size:14px" v-model="shape" val="line3" label="补贴" />
                 <q-radio style="margin-left:20px;font-size:14px" v-model="shape" val="line4" label="退补" />
               </div>

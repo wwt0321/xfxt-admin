@@ -47,8 +47,6 @@
 
 <script>
 import { MixinCommon } from '../mixins/MixinCommon';
-import { tokenKey } from '../../config.js';
-import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: '',
@@ -73,9 +71,7 @@ export default {
       let params = new FormData();
       params.append('username', this.username);
       params.append('password', this.password);
-      const token = await http.post('/system/login', params);
-      localStorage.setItem(tokenKey, token.data);
-      this.$router.replace(localStorage.to ? localStorage.to : '/home');
+      await this.exchangeToken(params);
     },
     getHeight() {
       this.conheight.height = window.innerHeight + 'px';

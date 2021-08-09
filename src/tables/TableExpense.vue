@@ -21,9 +21,11 @@
 <script>
 import { MixinTable } from '../mixins/MixinTable';
 import { date } from 'quasar';
+import { http } from '../utils/luch-request/index.js';
 export default {
   name: 'TableAnnouncement',
   mixins: [MixinTable],
+  props: ['work'],
   data() {
     return {
       edata: {},
@@ -41,25 +43,18 @@ export default {
       // 表格列设置
       columns: [
         {
-          name: 'date',
+          name: 'time',
           label: '时间',
           field: 'id',
-          align: 'center',
+          align: 'time',
           format: (v) => date.formatDate(v, 'YYYY-MM-DD HH:mm:ss'),
         },
-        { name: 'money', label: '金额', field: 'money', align: 'center' },
+        { name: 'amount', label: '金额', field: 'amount', align: 'center', format: (v) => `￥${v}` },
         { name: 'content', label: '内容', field: 'content', align: 'center' },
         { name: 'shop', label: '商户', field: 'shop', align: 'center' },
       ],
 
-      rows: [
-        {
-          date: '',
-          money: 30,
-          content: '套餐',
-          shop: '食堂',
-        },
-      ],
+      rows: [],
 
       // 查询条件
       filters: {},
@@ -68,12 +63,16 @@ export default {
     };
   },
 
-  async mounted() {
-    this.refresh();
-  },
+  async mounted() {},
 
   methods: {
-    refresh() {},
+    async refresh(type) {
+      this.selected = [];
+      let url = `/expose/getRecords?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}&workNo=${this.work}`;
+      const users = await http.get(url);
+      this.rows = users.data.list;
+      this.pagination.rowsNumber = users.data.num;
+    },
   },
 };
 </script>

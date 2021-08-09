@@ -8,6 +8,7 @@
  * http://ext.dcloud.net.cn/plugin?id=392
  */
 import axios from 'axios';
+import { tokenKey } from '../../../config';
 export default class Request {
   config = {
     baseUrl: '',
@@ -147,20 +148,13 @@ export default class Request {
         .then((res) => {
           console.log('res:', res);
           let data = res.data;
+          if (res.headers.authid) {
+            data.authid = res.headers.authid;
+          }
           resolve(data);
         })
         .catch(({ response, request }) => {
           console.log('err:', response);
-          if (response.status == 403) {
-            if (!localStorage.logout) {
-              alert('登录过期，请重新登录');
-            }
-            localStorage.to = window.location.hash.replace('#', '');
-            localStorage.logout = 1;
-            location.href = window.location.href.split('#')[0] + '#/login';
-            return false;
-          }
-
           return resolve([response || request]);
         });
     });

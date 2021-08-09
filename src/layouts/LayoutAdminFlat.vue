@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh Lpr lFf">
-    <q-header elevated class="print-hide" style="height:60px;min-width:1440px">
+    <q-header elevated class="print-hide" style="height:60px;">
       <q-toolbar style="height:60px;padding:0px">
         <div class="toolbar row">
           <q-img src="~assets/logo.png" style="width: 50px; height: 50px;margin-left:20px" contain />
@@ -12,15 +12,16 @@
             消费系统管理平台
           </div>
         </div>
-        <div style="position:absolute;z-index: 2;width:100%">
+        <div style="position:absolute;z-index: -1;width:100%">
           <div class="toolbar-time">{{ date }}</div>
         </div>
         <q-space></q-space>
         <q-avatar style="width:30px;height:30px">
-          <img src="https://cdn.quasar.dev/img/avatar.png" />
+          <!--<img src="https://cdn.quasar.dev/img/avatar.png" />-->
+          <q-icon style="font-size:30px" name="person_outline" />
         </q-avatar>
         <div class="toolbar-back" style="margin-left:10px">管理员，你好！</div>
-        <div class="row" style="cursor: pointer;margin-left:13px">
+        <div class="row" style="cursor: pointer;margin-left:13px" @click="logout">
           <q-img class="toolbar-image" src="../assets/back.svg"></q-img>
           <div class="toolbar-back" src="../assets/back.svg">退出登录</div>
         </div>
@@ -64,6 +65,7 @@
 import { date } from 'quasar';
 import { map, prop, fromPairs } from 'rambda';
 import { MixinCommon } from '../mixins/MixinCommon';
+import { tokenKey } from '../../config';
 
 export default {
   name: 'LayoutAdmin',
@@ -80,8 +82,13 @@ export default {
   methods: {
     logout() {
       console.log('logout');
-      this.token('');
-      this.$router.push('/login');
+      let res = confirm('确认退出登录?');
+      if (res) {
+        //this.token('');
+        localStorage.removeItem(tokenKey);
+        localStorage.removeItem('jwtTime');
+        this.$router.push('/login');
+      }
     },
     change(index) {
       this.click = index;
@@ -148,8 +155,8 @@ export default {
       ],
     };
 
-    const data = await this.grequest('dicts');
-    let dicts = map(prop('nodes'), data);
+    //const data = await this.grequest('dicts');
+    //let dicts = map(prop('nodes'), data);
 
     // 需要特殊呈现的字典 @TODO，下方是例子
     // const { units } = await this.grequest('units');
@@ -160,15 +167,15 @@ export default {
     //   };
     // });
 
-    this.$store.commit('dicts/set', dicts);
-
-    const enums = await this.grequest('enums');
-    this.$store.commit('enums/set', enums);
-
-    const { configs } = await this.grequest('configs');
-    const pairs = configs.nodes.map((v) => [v.key, { value: v.value, comment: v.comment }]);
-    const configData = fromPairs(pairs);
-    this.$store.commit('configs/set', configData);
+    //this.$store.commit('dicts/set', dicts);
+    //
+    //const enums = await this.grequest('enums');
+    //this.$store.commit('enums/set', enums);
+    //
+    //const { configs } = await this.grequest('configs');
+    //const pairs = configs.nodes.map((v) => [v.key, { value: v.value, comment: v.comment }]);
+    //const configData = fromPairs(pairs);
+    //this.$store.commit('configs/set', configData);
     this.loaded = true;
   },
 };
@@ -182,7 +189,6 @@ export default {
   z-index: 1;
 }
 .toolbar-time {
-  width: 1440px;
   text-align: center;
   margin: 0 auto;
 }
@@ -190,7 +196,7 @@ export default {
   background-color: #00696d;
 }
 .toolbar-title {
-  width: 160px;
+  width: 200px;
   height: 28px;
   opacity: 1;
   font-size: 20px;
@@ -199,6 +205,7 @@ export default {
   text-align: left;
   color: #ffffff;
   line-height: 28px;
+  padding-left: 10px;
 }
 .logo-title {
   width: 112px;

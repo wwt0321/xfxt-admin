@@ -21,13 +21,12 @@ http.validateStatus = (response) => {
 };
 
 http.interceptor.request((config, cancel) => {
-  let authorize = localStorage.getItem(tokenKey) || '';
+  let authorize = localStorage.jwtTime || 0;
   /* 请求之前拦截器 */
   // 有 token 且有效期超过 1 小时
-  //if (authorize.access_token && authorize.expires_at - new Date() / 1000 > 3600) {
-  //  config.headers.Authorization = 'Bearer ' + authorize.access_token;
-  //}
-  config.headers.authId = authorize;
+  if (authorize - new Date() / 1000 > 3600 && config.url != '/system/login') {
+    config.headers.authId = localStorage.getItem(tokenKey);
+  }
   config.headers = {
     ...config.headers,
   };
@@ -42,7 +41,7 @@ http.interceptor.request((config, cancel) => {
 http.interceptor.response(
   (response) => {
     /* 请求之后拦截器 */
-    let authorize = localStorage.getItem(tokenKey) || '';
+    let authorize = localStorage.jwtTime || 0;
     //if (response.headers.authId) {
     //  let token = response.headers.authId.replace('Bearer ', '');
     //  authorize.access_token = token;

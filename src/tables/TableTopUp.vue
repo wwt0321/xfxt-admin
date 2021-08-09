@@ -14,16 +14,17 @@
     separator="cell"
     flat
   >
-    <q-td style="text-align:center" slot="body-cell-money" slot-scope="{ row }"> ￥{{ row.money }} </q-td>
   </q-table>
 </template>
 
 <script>
 import { MixinTable } from '../mixins/MixinTable';
 import { date } from 'quasar';
+import { http } from '../utils/luch-request/index.js';
 export default {
   name: 'TableAnnouncement',
   mixins: [MixinTable],
+  props: ['work'],
   data() {
     return {
       edata: {},
@@ -41,23 +42,17 @@ export default {
       // 表格列设置
       columns: [
         {
-          name: 'date',
+          name: 'time',
           label: '时间',
-          field: 'id',
+          field: 'time',
           align: 'center',
           format: (v) => date.formatDate(v, 'YYYY-MM-DD HH:mm:ss'),
         },
-        { name: 'money', label: '充值金额', field: 'money', align: 'center' },
-        { name: 'style', label: '充值类型', field: 'style', align: 'center' },
+        { name: 'amount', label: '充值金额', field: 'amount', align: 'center', format: (v) => `￥${v}` },
+        { name: 'type', label: '充值类型', field: 'type', align: 'center', format: (v) => (v == 1 ? '充值' : '提现') },
       ],
 
-      rows: [
-        {
-          date: '',
-          money: 110,
-          style: '充值',
-        },
-      ],
+      rows: [],
 
       // 查询条件
       filters: {},
@@ -66,12 +61,19 @@ export default {
     };
   },
 
-  async mounted() {
-    this.refresh();
-  },
+  async mounted() {},
 
   methods: {
-    refresh() {},
+    async refresh(type) {
+      this.selected = [];
+      let url = `/account/getRecords?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}&workNo=${this.work}`;
+      if (type) {
+        url += `&type=${type}`;
+      }
+      const users = await http.get(url);
+      this.rows = users.data.list;
+      this.pagination.rowsNumber = users.data.num;
+    },
   },
 };
 </script>

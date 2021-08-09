@@ -1,6 +1,6 @@
-import jwtDecode from 'jwt-decode';
 import { MixinRequest } from './MixinRequest';
 import { tokenKey } from '../../config';
+import { http } from '../utils/luch-request/index.js';
 
 /**
  * 提取或存储 jwtToken
@@ -8,15 +8,24 @@ import { tokenKey } from '../../config';
  * 不传入时为获取，传入时为设置
  */
 const token = (jwtToken) => {
-  if (typeof jwtToken !== 'undefined') {
-    localStorage.setItem(tokenKey, jwtToken);
-    return;
-  }
-
-  if (!localStorage.getItem(tokenKey)) {
+  //if (typeof jwtToken !== 'undefined') {
+  //  localStorage.setItem(tokenKey, jwtToken);
+  //  return;
+  //}
+  let token = localStorage.getItem(tokenKey);
+  if (!token) {
     return false;
   }
-  return jwtDecode(localStorage.getItem(tokenKey));
+  const time = localStorage.jwtTime || 0;
+  // 是否快要过期
+  const isNearExpired = time - new Date() / 1000 < 3600;
+  // 必须有 id 且有效期够长
+  if (!localStorage.jwtTime || isNearExpired) {
+    localStorage.removeItem(tokenKey);
+    localStorage.removeItem('jwtTime');
+    return false;
+  }
+  return token;
 };
 
 /**
@@ -42,14 +51,17 @@ const MixinTokenAdmin = {
      * @param {Object} params - 登录所需参数
      */
     async exchangeToken(params) {
-      const { auth } = await this.grequest('auth', params);
-      console.log(auth);
-      if (!auth.jwtToken) {
-        return;
+      const data = await http.post('/system/login', params);
+      if (data.res) {
+        localStorage.setItem('jwtTime', data.data.time);
+        localStorage.setItem(tokenKey, data.authid);
+        token();
+        this.$router.replace(localStorage.to ? localStorage.to : '/home');
+        return true;
+      } else {
+        alert(data.msg);
+        return false;
       }
-      token(auth.jwtToken);
-      this.$router.replace(localStorage.to || '/');
-      return auth.jwtToken;
     },
   },
 };

@@ -45,8 +45,8 @@
       </q-td>
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
-          <div class="operation-title" @click="showRechargeRecord(row.id)">充值记录</div>
-          <div class="operation-title" @click="showExpense(row.id)">消费记录</div>
+          <div class="operation-title" @click="showRechargeRecord(row)">充值记录</div>
+          <div class="operation-title" @click="showExpense(row)">消费记录</div>
           <div class="operation-title" @click="showEdit(row)">编辑</div>
           <div class="operation-title" v-if="row.state == 2" @click="changeState(row, 1)">启用</div>
           <div class="operation-title" style="color:#ea5e5e" v-if="row.state == 1" @click="changeState(row, 2)">
@@ -115,6 +115,7 @@
         :primary-id="primaryId"
         @hide="hideRechargeRecord"
         @submit="refresh"
+        :selected="selected"
         style="width: 800px;"
         :locked="locked"
         :type="filters.type"
@@ -128,6 +129,7 @@
         :primary-id="primaryId"
         @hide="hideExpemse"
         @submit="refresh"
+        :selected="selected"
         style="width: 800px;"
         :locked="locked"
         :type="filters.type"
@@ -244,16 +246,16 @@ export default {
       this.isShow.edit = true;
       this.selected = [row];
     },
-    showRechargeRecord(id) {
+    showRechargeRecord(row) {
       this.isShow.rechargeRecord = true;
-      this.primaryId = id;
+      this.selected = [row];
     },
     hideRechargeRecord() {
       this.isShow.rechargeRecord = false;
     },
-    showExpense(id) {
+    showExpense(row) {
       this.isShow.expense = true;
-      this.primaryId = id;
+      this.selected = [row];
     },
     hideExpemse() {
       this.isShow.expense = false;
