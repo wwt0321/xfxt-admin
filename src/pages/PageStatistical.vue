@@ -92,55 +92,29 @@
     <!--门店统计-->
     <div v-show="shops" class="body" :style="bodyheight">
       <div class="all-top row">
-        <q-tabs v-model="tab4" align="left" active-color="secondary">
-          <q-tab class="all-tab" name="tab1" label="今天" />
-          <q-tab class="all-tab" name="tab2" label="昨天" />
-          <q-tab class="all-tab" name="tab3" label="近7日" />
-          <q-tab class="all-tab" name="tab4" label="近30日" />
-          <q-tab class="all-tab" name="tab5" label="今年" />
+        <q-tabs v-model="tab" align="left" active-color="secondary">
+          <q-tab class="all-tab" name="tab1" label="今天" @click="timeChange(1)" />
+          <q-tab class="all-tab" name="tab2" label="昨天" @click="timeChange(2)" />
+          <q-tab class="all-tab" name="tab3" label="近7日" @click="timeChange(3)" />
+          <q-tab class="all-tab" name="tab4" label="近30日" @click="timeChange(4)" />
+          <q-tab class="all-tab" name="tab5" label="今年" @click="timeChange(5)" />
         </q-tabs>
         <q-space></q-space>
-        <q-input
-          style="width:180px"
-          outlined
-          dense
-          stack-label
-          v-model="time"
-          placeholder="请选择开始时间"
-          mask="####-##-##"
-          clearable
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxyHappen" transition-show="scale" transition-hide="scale">
-                <q-date minimal v-model="time" @input="$refs.qDateProxyHappen.hide()" />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+        <q-input style="width:180px" type="date" outlined dense stack-label v-model="timeStart" clearable></q-input>
         <div class="all-top-line">-</div>
         <q-input
           style="width:180px;margin-right:20px"
+          type="date"
           outlined
           dense
           stack-label
-          v-model="time"
-          placeholder="请选择结束时间"
-          mask="####-##-##"
+          v-model="timeEnd"
           clearable
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxyHappen" transition-show="scale" transition-hide="scale">
-                <q-date minimal v-model="time" @input="$refs.qDateProxyHappen.hide()" />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-        <q-btn class="top-filter-btn" color="secondary" label="查询"></q-btn>
+        ></q-input>
+        <q-btn class="top-filter-btn" color="secondary" label="查询" @click="timeChange(6)"></q-btn>
       </div>
       <div style="padding:20px">
-        <table-statistical-consumption />
+        <table-statistical-shops ref="tableshop" :search="filters" />
       </div>
     </div>
   </div>
@@ -150,10 +124,17 @@ import TableAll from 'src/tables/TableAll.vue';
 import TableStatisticalPersonSubsidy from 'src/tables/TableStatisticalPersonSubsidy.vue';
 import TableStatisticalConsumption from 'src/tables/TableStatisticalConsumption.vue';
 import TableStatisticalPersonPay from 'src/tables/TableStatisticalPersonPay.vue';
+import TableStatisticalShops from 'src/tables/TableStatisticalShops.vue';
 import { http } from '../utils/luch-request/index.js';
 
 export default {
-  components: { TableAll, TableStatisticalPersonSubsidy, TableStatisticalConsumption, TableStatisticalPersonPay },
+  components: {
+    TableAll,
+    TableStatisticalPersonSubsidy,
+    TableStatisticalConsumption,
+    TableStatisticalPersonPay,
+    TableStatisticalShops,
+  },
   name: 'PageStartical',
   data() {
     return {
@@ -192,6 +173,9 @@ export default {
   },
   mounted() {
     this.timeChange(1);
+    setTimeout(() => {
+      this.$refs.tableshop.refresh();
+    });
   },
   methods: {
     getHeight() {
