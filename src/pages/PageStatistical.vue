@@ -92,7 +92,7 @@
     <!--门店统计-->
     <div v-show="shops" class="body" :style="bodyheight">
       <div class="all-top row">
-        <q-tabs v-model="tab" align="left" active-color="secondary">
+        <q-tabs v-model="tab4" align="left" active-color="secondary">
           <q-tab class="all-tab" name="tab1" label="今天" @click="timeChange2(1)" />
           <q-tab class="all-tab" name="tab2" label="昨天" @click="timeChange2(2)" />
           <q-tab class="all-tab" name="tab3" label="近7日" @click="timeChange2(3)" />
@@ -124,8 +124,8 @@ import TableAll from 'src/tables/TableAll.vue';
 import TableStatisticalPersonSubsidy from 'src/tables/TableStatisticalPersonSubsidy.vue';
 import TableStatisticalConsumption from 'src/tables/TableStatisticalConsumption.vue';
 import TableStatisticalPersonPay from 'src/tables/TableStatisticalPersonPay.vue';
-import { date } from 'quasar';
 import TableStatisticalShops from 'src/tables/TableStatisticalShops.vue';
+import { date } from 'quasar';
 import { http } from '../utils/luch-request/index.js';
 
 export default {
@@ -261,9 +261,15 @@ export default {
         this.filters2.startTime = Date.parse(new Date(new Date().getFullYear + '-01-01'));
         this.filters2.endTime = today + oneday;
       } else if (type == 6) {
+        if (!this.timeStart2) {
+          return alert('请选择开始时间');
+        }
+        if (!this.timeEnd2) {
+          return alert('请选择结束时间');
+        }
         this.filters2.startTime = Date.parse(new Date(this.timeStart2));
         this.filters2.endTime = Date.parse(new Date(this.timeEnd2)) + oneday;
-        this.tab = '';
+        this.tab4 = '';
       }
       if (type != 6) {
         this.timeStart2 = '';

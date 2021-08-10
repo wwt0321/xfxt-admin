@@ -1,72 +1,17 @@
 <template>
   <div class="q-ma-md">
-    <!-- 数据列表 -->
-    <q-table
-      color="primary"
-      :row-key="fieldId"
-      :columns="columns"
-      :data="rows"
-      :loading="loading > 0"
-      :rows-per-page-options="[10, 20, 50]"
-      :pagination.sync="pagination"
-      selection="multiple"
-      :selected.sync="selected"
-      @request="request"
-    >
-      <template v-slot:top>
-        <q-space />
-        <div class="flex operations">
-          <q-btn outline color="primary" icon="add" @click="showCreate" :disable="loading > 0" />
-          <q-btn
-            outline
-            color="red"
-            icon="clear"
-            @click="showDeleteRows"
-            :disable="loading > 0 || selected.length === 0"
-          />
-        </div>
-      </template>
-      <q-td slot="body-cell-operation" slot-scope="{ row }">
-        <q-btn v-if="row.id != 1" @click="resetPassword(row)" label="重置密码" />
-        <q-btn label="编辑" @click="showEdit(row)" />
-      </q-td>
-    </q-table>
-
-    <!-- 添加与编辑 -->
-    <q-dialog v-model="modeEdit" no-backdrop-dismiss>
-      <q-card style="width: 640px">
-        <q-form @submit="save">
-          <q-card-section>
-            <div class="text-h6">{{ edata.id ? '修改' : '添加' }}</div>
-            <q-input dense outlined stack-label label="账号" v-model="edata.name" :rules="[(v) => !!v]" />
-            <q-select
-              dense
-              outlined
-              stack-label
-              label="类型"
-              v-model="edata.roleId"
-              :options="dicts.roles"
-              emit-value
-              map-options
-              :rules="[(v) => !!v || '请选择一个角色']"
-            />
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat @click="modeEdit = false" label="关闭" />
-            <q-btn type="submit" :loading="mutating > 0" :disabled="mutating > 0" :label="edata.id ? '保存' : '添加'" />
-          </q-card-actions>
-        </q-form>
-      </q-card>
-    </q-dialog>
+    <q-btn class="body-btn" color="secondary" label="新增账号" @click="addPerson"></q-btn>
+    <table-admin ref="table" />
   </div>
 </template>
 
 <script>
-import { MixinCRUD } from '../mixins/MixinCRUD';
+import { http } from '../utils/luch-request/index.js';
+import TableAdmin from 'src/tables/TableAdmin.vue';
 
 export default {
   name: 'PageAdmin',
-  mixins: [MixinCRUD],
+  components: { TableAdmin },
   data() {
     return {
       // 主键字段和名称字段
@@ -90,39 +35,23 @@ export default {
         name: '',
         roleId: '',
       },
+      filters: {},
     };
   },
 
-  mounted() {
-    this.refresh();
-  },
+  mounted() {},
 
   methods: {
-    async refresh() {
-      const { admins } = await this.grequest('admins', {
-        ...this.paginationParams,
-      });
-      this.pagination.rowsNumber = admins.totalCount;
-      this.rows = admins.nodes;
-      this.selected = [];
-    },
-    async resetPassword({ id, name }) {
-      const isConfirm = await this.confirm(`重置${name}的密码吗？`);
-      console.log(isConfirm);
-      if (!isConfirm) {
-        return;
-      }
-
-      const { resetPassword } = await this.grequest('resetPassword', {
-        id,
-      });
-      console.log(resetPassword.plain);
-      this.alert({ title: '请记住新密码', message: resetPassword.plain });
-    },
-
-    preSave() {
-      this.edata.parentId = this.token().uuid;
+    addPerson() {
+      this.$refs.table.showCreate();
     },
   },
 };
 </script>
+
+<style scoped>
+.body-btn {
+  height: 40px;
+  margin-bottom: 13px;
+}
+</style>

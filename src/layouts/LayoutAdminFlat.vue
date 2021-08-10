@@ -20,7 +20,7 @@
           <!--<img src="https://cdn.quasar.dev/img/avatar.png" />-->
           <q-icon style="font-size:30px" name="person_outline" />
         </q-avatar>
-        <div class="toolbar-back" style="margin-left:10px">管理员，你好！</div>
+        <div class="toolbar-back" style="margin-left:10px">{{ user.name }}，你好！</div>
         <div class="row" style="cursor: pointer;margin-left:13px" @click="logout">
           <q-img class="toolbar-image" src="../assets/back.svg"></q-img>
           <div class="toolbar-back" src="../assets/back.svg">退出登录</div>
@@ -43,7 +43,7 @@
           <q-item
             :class="index == click ? 'itemClick' : 'item'"
             clickable
-            v-for="(v, index) in functions.nodes"
+            v-for="(v, index) in functions"
             :to="v.route"
             :key="v.id"
             @click="change(index)"
@@ -77,6 +77,7 @@ export default {
       minidrawer: false,
       functions: [],
       loaded: true,
+      user: {},
     };
   },
   methods: {
@@ -100,59 +101,60 @@ export default {
 
     /*const { functions } = await this.grequest('functions');
     this.functions = functions;*/
-    this.functions = {
-      nodes: [
-        {
-          id: 10100,
-          name: '首页',
-          icon: 'https',
-          route: '/home',
-          parentId: '11000',
-        },
-        {
-          id: 10200,
-          name: '用户管理',
-          icon: 'https',
-          route: '/person',
-          parentId: '11000',
-        },
-        {
-          id: 10300,
-          name: '角色管理',
-          icon: 'https',
-          route: '/role',
-          parentId: '11000',
-        },
-        {
-          id: 10400,
-          name: '商户管理',
-          icon: 'https',
-          route: '/shop',
-          parentId: '11000',
-        },
-        {
-          id: 10500,
-          name: '补贴方案设置',
-          icon: 'https',
-          route: '/subsidy',
-          parentId: '11000',
-        },
-        {
-          id: 10600,
-          name: '补贴记录',
-          icon: 'https',
-          route: '/record',
-          parentId: '11000',
-        },
-        {
-          id: 10700,
-          name: '统计报表',
-          icon: 'https',
-          route: '/statistical',
-          parentId: '11000',
-        },
-      ],
-    };
+    this.functions = [
+      {
+        id: 10100,
+        name: '首页',
+        icon: 'https',
+        route: '/home',
+        parentId: '10000',
+      },
+      {
+        id: 10200,
+        name: '用户管理',
+        icon: 'https',
+        route: '/person',
+        parentId: '10000',
+      },
+      {
+        id: 10300,
+        name: '角色管理',
+        icon: 'https',
+        route: '/role',
+        parentId: '10000',
+      },
+      {
+        id: 10400,
+        name: '商户管理',
+        icon: 'https',
+        route: '/shop',
+        parentId: '10000',
+      },
+      {
+        id: 10500,
+        name: '补贴方案设置',
+        icon: 'https',
+        route: '/subsidy',
+        parentId: '10000',
+      },
+      {
+        id: 10600,
+        name: '补贴记录',
+        icon: 'https',
+        route: '/record',
+        parentId: '10000',
+      },
+      {
+        id: 10700,
+        name: '统计报表',
+        icon: 'https',
+        route: '/statistical',
+        parentId: '10000',
+      },
+    ];
+    this.click = this.functions.findIndex((v) => v.route == this.$route.path);
+
+    this.user = JSON.parse(localStorage.user);
 
     //const data = await this.grequest('dicts');
     //let dicts = map(prop('nodes'), data);

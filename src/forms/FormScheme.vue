@@ -56,9 +56,15 @@ export default {
   },
 
   async mounted() {
-    let ids = this.selected.map((v) => v.id);
-    let roleNames = this.selected.map((v) => v.name);
-    let allowances = this.selected.map((v) => v.allowance || 0);
+    let selected = [];
+    this.selected.forEach((v) => {
+      if (v.allowance) {
+        selected.push(v);
+      }
+    });
+    let ids = selected.map((v) => v.id);
+    let roleNames = selected.map((v) => v.name);
+    let allowances = selected.map((v) => v.allowance || 0);
     this.edata.ids = ids.join(',');
     this.edata.roleNames = roleNames.join(',');
     this.edata.allowances = allowances.join(',');

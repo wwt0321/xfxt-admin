@@ -56,6 +56,7 @@ const MixinTokenAdmin = {
       if (data.res) {
         localStorage.setItem('jwtTime', data.data.time);
         localStorage.setItem(tokenKey, data.authid);
+        localStorage.setItem('user', JSON.stringify(data.data));
         token();
         this.$router.replace(localStorage.to && localStorage.to != '/' ? localStorage.to : '/home');
         return true;

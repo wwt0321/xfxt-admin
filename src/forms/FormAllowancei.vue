@@ -91,16 +91,20 @@ export default {
   methods: {
     preSave() {},
     async goSubmit() {
-      let sum = 0;
+      let sum = 0,
+        roles = [];
       this.roles.forEach((v) => {
         sum += parseFloat(v.allowance);
+        if (v.allowance) {
+          roles.push(v);
+        }
       });
       if (sum === 0) {
         return alert('至少得有一个角色补贴金额大于0');
       }
-      this.edata.ids = this.roles.map((v) => v.value).join(',');
-      this.edata.roleNames = this.roles.map((v) => v.label).join(',');
-      this.edata.allowances = this.roles.map((v) => v.allowance || 0).join(',');
+      this.edata.ids = roles.map((v) => v.value).join(',');
+      this.edata.roleNames = roles.map((v) => v.label).join(',');
+      this.edata.allowances = roles.map((v) => v.allowance || 0).join(',');
       console.log(this.edata);
       this.gql.update += `/${this.edata.id}`;
       this.submit('');

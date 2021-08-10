@@ -42,8 +42,15 @@ export default {
 
       // 表格列设置
       columns: [
-        { name: 'shop', label: '消费商户', field: 'shop', align: 'center' },
-        { name: 'amount', label: '消费金额', field: 'amount', align: 'center', format: (v) => `￥${v}` },
+        {
+          name: 'time',
+          label: '时间',
+          field: 'time',
+          align: 'center',
+          format: (v) => date.formatDate(v, 'YYYY-MM-DD HH:mm:ss'),
+        },
+        { name: 'merchantsName', label: '门店', field: 'merchantsName', align: 'center' },
+        { name: 'amount', label: '收入', field: 'amount', align: 'center', format: (v) => `￥${v}` },
       ],
 
       rows: [],
@@ -63,9 +70,8 @@ export default {
       let filters = { ...this.search };
       let url = `/statistics/store?startTime=${filters.startTime}&endTime=${filters.endTime}`;
       const store = await http.get(url);
-      console.log(3333, store);
-      //this.rows = store.data.list;
-      //this.pagination.rowsNumber = store.data.num;
+      this.rows = store.data.list;
+      this.pagination.rowsNumber = store.data.num;
     },
   },
 };
