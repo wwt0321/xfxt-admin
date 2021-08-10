@@ -92,55 +92,29 @@
     <!--门店统计-->
     <div v-show="shops" class="body" :style="bodyheight">
       <div class="all-top row">
-        <q-tabs v-model="tab4" align="left" active-color="secondary">
-          <q-tab class="all-tab" name="tab1" label="今天" />
-          <q-tab class="all-tab" name="tab2" label="昨天" />
-          <q-tab class="all-tab" name="tab3" label="近7日" />
-          <q-tab class="all-tab" name="tab4" label="近30日" />
-          <q-tab class="all-tab" name="tab5" label="今年" />
+        <q-tabs v-model="tab" align="left" active-color="secondary">
+          <q-tab class="all-tab" name="tab1" label="今天" @click="timeChange2(1)" />
+          <q-tab class="all-tab" name="tab2" label="昨天" @click="timeChange2(2)" />
+          <q-tab class="all-tab" name="tab3" label="近7日" @click="timeChange2(3)" />
+          <q-tab class="all-tab" name="tab4" label="近30日" @click="timeChange2(4)" />
+          <q-tab class="all-tab" name="tab5" label="今年" @click="timeChange2(5)" />
         </q-tabs>
         <q-space></q-space>
-        <q-input
-          style="width:180px"
-          outlined
-          dense
-          stack-label
-          v-model="time"
-          placeholder="请选择开始时间"
-          mask="####-##-##"
-          clearable
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxyHappen" transition-show="scale" transition-hide="scale">
-                <q-date minimal v-model="time" @input="$refs.qDateProxyHappen.hide()" />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+        <q-input style="width:180px" type="date" outlined dense stack-label v-model="timeStart2" clearable></q-input>
         <div class="all-top-line">-</div>
         <q-input
           style="width:180px;margin-right:20px"
+          type="date"
           outlined
           dense
           stack-label
-          v-model="time"
-          placeholder="请选择结束时间"
-          mask="####-##-##"
+          v-model="timeEnd2"
           clearable
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxyHappen" transition-show="scale" transition-hide="scale">
-                <q-date minimal v-model="time" @input="$refs.qDateProxyHappen.hide()" />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-        <q-btn class="top-filter-btn" color="secondary" label="查询"></q-btn>
+        ></q-input>
+        <q-btn class="top-filter-btn" color="secondary" label="查询" @click="timeChange2(6)"></q-btn>
       </div>
       <div style="padding:20px">
-        <table-statistical-consumption />
+        <table-statistical-shops ref="tableshop" :search="filters2" />
       </div>
     </div>
   </div>
@@ -151,10 +125,17 @@ import TableStatisticalPersonSubsidy from 'src/tables/TableStatisticalPersonSubs
 import TableStatisticalConsumption from 'src/tables/TableStatisticalConsumption.vue';
 import TableStatisticalPersonPay from 'src/tables/TableStatisticalPersonPay.vue';
 import { date } from 'quasar';
+import TableStatisticalShops from 'src/tables/TableStatisticalShops.vue';
 import { http } from '../utils/luch-request/index.js';
 
 export default {
-  components: { TableAll, TableStatisticalPersonSubsidy, TableStatisticalConsumption, TableStatisticalPersonPay },
+  components: {
+    TableAll,
+    TableStatisticalPersonSubsidy,
+    TableStatisticalConsumption,
+    TableStatisticalPersonPay,
+    TableStatisticalShops,
+  },
   name: 'PageStartical',
   data() {
     return {
@@ -180,6 +161,9 @@ export default {
       filters: {},
       timeStart: '',
       timeEnd: '',
+      filters2: {},
+      timeStart2: '',
+      timeEnd2: '',
       total: {
         allowanceSum: 0,
         rechargeSum: 0,
@@ -193,6 +177,7 @@ export default {
   },
   mounted() {
     this.timeChange(1);
+    this.timeChange2(1);
   },
   methods: {
     getHeight() {
@@ -254,6 +239,38 @@ export default {
         this.$refs.table21.refresh();
         this.$refs.table22.refresh();
         this.$refs.table23.refresh();
+      });
+    },
+    async timeChange2(type) {
+      let today = date.formatDate(new Date(), 'YYYY-MM-DD'),
+        oneday = 1000 * 60 * 60 * 24;
+      today = Date.parse(today);
+      if (type == 1) {
+        this.filters2.startTime = today;
+        this.filters2.endTime = today + oneday;
+      } else if (type == 2) {
+        this.filters2.startTime = today - oneday;
+        this.filters2.endTime = today;
+      } else if (type == 3) {
+        this.filters2.startTime = today - 6 * oneday;
+        this.filters2.endTime = today + oneday;
+      } else if (type == 4) {
+        this.filters2.startTime = today - 29 * oneday;
+        this.filters2.endTime = today + oneday;
+      } else if (type == 5) {
+        this.filters2.startTime = Date.parse(new Date(new Date().getFullYear + '-01-01'));
+        this.filters2.endTime = today + oneday;
+      } else if (type == 6) {
+        this.filters2.startTime = Date.parse(new Date(this.timeStart2));
+        this.filters2.endTime = Date.parse(new Date(this.timeEnd2)) + oneday;
+        this.tab = '';
+      }
+      if (type != 6) {
+        this.timeStart2 = '';
+        this.timeEnd2 = '';
+      }
+      setTimeout(() => {
+        this.$refs.tableshop.refresh();
       });
     },
   },
