@@ -92,7 +92,6 @@ export default {
     },
     change(index) {
       this.click = index;
-      console.log(2333, this.click);
     },
   },
   async mounted() {

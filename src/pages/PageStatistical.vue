@@ -31,60 +31,34 @@
           <q-tab class="all-tab" name="tab5" label="今年" @click="timeChange(5)" />
         </q-tabs>
         <q-space></q-space>
-        <q-input
-          style="width:180px"
-          outlined
-          dense
-          stack-label
-          v-model="time"
-          placeholder="请选择开始时间"
-          mask="####-##-##"
-          clearable
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxyHappen" transition-show="scale" transition-hide="scale">
-                <q-date minimal v-model="time" @input="$refs.qDateProxyHappen.hide()" />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+        <q-input style="width:180px" type="date" outlined dense stack-label v-model="timeStart" clearable></q-input>
         <div class="all-top-line">-</div>
         <q-input
           style="width:180px;margin-right:20px"
+          type="date"
           outlined
           dense
           stack-label
-          v-model="time"
-          placeholder="请选择结束时间"
-          mask="####-##-##"
+          v-model="timeEnd"
           clearable
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxyHappen" transition-show="scale" transition-hide="scale">
-                <q-date minimal v-model="time" @input="$refs.qDateProxyHappen.hide()" />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-        <q-btn class="top-filter-btn" color="secondary" label="查询"></q-btn>
+        ></q-input>
+        <q-btn class="top-filter-btn" color="secondary" label="查询" @click="timeChange(6)"></q-btn>
       </div>
       <div class="top-body row">
         <div class="top-body-box row">
           <div class="card-body-box-xx-title">现金充值</div>
           <q-space></q-space>
-          <div class="card-body-box-xx-money">￥{{ xjcz }}</div>
+          <div class="card-body-box-xx-money">￥{{}}</div>
         </div>
         <div class="top-body-box row">
           <div class="card-body-box-xx-title">补贴</div>
           <q-space></q-space>
-          <div class="card-body-box-xx-money">￥{{ bt }}</div>
+          <div class="card-body-box-xx-money">￥{{}}</div>
         </div>
         <div class="top-body-box row">
           <div class="card-body-box-xx-title">消费</div>
           <q-space></q-space>
-          <div class="card-body-box-xx-money">￥{{ xf }}</div>
+          <div class="card-body-box-xx-money">￥{{}}</div>
         </div>
       </div>
       <div class="all-top row">
@@ -95,9 +69,9 @@
         </q-tabs>
       </div>
       <div style="padding:20px">
-        <table-statistical-person-pay :search="filters" v-show="tab2 == 'tab1'" />
-        <table-statistical-person-subsidy :search="filters" v-show="tab2 == 'tab2'" />
-        <table-statistical-consumption :search="filters" v-show="tab2 == 'tab3'" />
+        <table-statistical-person-pay ref="table21" :search="filters" v-show="tab2 == 'tab1'" />
+        <table-statistical-person-subsidy ref="table22" :search="filters" v-show="tab2 == 'tab2'" />
+        <table-statistical-consumption ref="table23" :search="filters" v-show="tab2 == 'tab3'" />
       </div>
     </div>
     <!--人员统计-->
@@ -202,11 +176,16 @@ export default {
       subsidy: true,
       consumption: false,
       filters: {},
+      timeStart: '',
+      timeEnd: '',
     };
   },
   created() {
     window.addEventListener('resize', this.getHeight);
     this.getHeight();
+  },
+  mounted() {
+    this.timeChange(1);
   },
   methods: {
     getHeight() {
@@ -241,9 +220,25 @@ export default {
         this.filters.startTime = today - 6 * oneday;
         this.filters.endTime = today + oneday;
       } else if (type == 4) {
+        this.filters.startTime = today - 29 * oneday;
+        this.filters.endTime = today + oneday;
+      } else if (type == 5) {
         this.filters.startTime = Date.parse(new Date(new Date().getFullYear + '-01-01'));
         this.filters.endTime = today + oneday;
+      } else if (type == 6) {
+        this.filters.startTime = Date.parse(new Date(this.timeStart));
+        this.filters.endTime = Date.parse(new Date(this.timeEnd)) + oneday;
+        this.tab = '';
       }
+      if (type != 6) {
+        this.timeStart = '';
+        this.timeEnd = '';
+      }
+      setTimeout(() => {
+        this.$refs.table21.refresh();
+        this.$refs.table22.refresh();
+        this.$refs.table23.refresh();
+      });
     },
   },
 };

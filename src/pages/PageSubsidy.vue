@@ -63,7 +63,7 @@ export default {
     };
   },
   async mounted() {
-    const roles = await http.get(`/role/get?limit=${999}&page=${1}`);
+    const roles = await http.get(`/role/get?limit=${999}&page=${1}&state=${1}`);
     this.roles = roles.data.list;
     roles.data.list.forEach((v) => {
       this.allowances.push({

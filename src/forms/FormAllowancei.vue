@@ -71,7 +71,7 @@ export default {
 
   async mounted() {
     this.edata = this.selected[0] ? { ...this.selected[0] } : {};
-    const roles = await http.get(`/role/get?limit=${999}&page=${1}`);
+    const roles = await http.get(`/role/get?limit=${999}&page=${1}&state=${1}`);
     roles.data.list.forEach((v) => {
       v.value = v.id;
       v.label = v.name;
