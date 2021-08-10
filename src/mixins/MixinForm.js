@@ -24,6 +24,7 @@ export const MixinForm = {
       gql: {}, // 挂载GraphQL请求
       mutating: 0,
       loaded: false,
+      loading: 0,
     };
   },
 
@@ -36,10 +37,11 @@ export const MixinForm = {
     // 添加或保存数据，需要自定义 this.gqlUpdate 和 this.gqlCreate
     async submit(tip) {
       console.log(this.edata);
+      this.loading++;
 
       let params = new FormData();
       Object.keys(this.edata).forEach((v) => {
-        params.append(v, this.edata[v] == 0 ? 0 : this.edata[v] || '');
+        params.append(v, this.edata[v] === 0 ? 0 : this.edata[v] || '');
       });
       let res = '';
       if (this.edata.id) {
@@ -54,6 +56,7 @@ export const MixinForm = {
       } else {
         alert(this.edata.id ? `${tip || '编辑'}失败` : `${tip || '新建'}失败`);
       }
+      this.loading--;
     },
 
     async load(returnOnly = false) {

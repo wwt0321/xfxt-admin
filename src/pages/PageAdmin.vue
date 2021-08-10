@@ -22,7 +22,7 @@
             color="red"
             icon="clear"
             @click="showDeleteRows"
-            :disable="loading > 0 || selected.length == 0"
+            :disable="loading > 0 || selected.length === 0"
           />
         </div>
       </template>

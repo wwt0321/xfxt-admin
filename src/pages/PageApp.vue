@@ -19,7 +19,7 @@
       </template>
       <template v-slot:top-right>
         <q-btn flat :disable="loading > 0" icon="add" @click="showCreate" />
-        <q-btn flat :disable="loading > 0 || selected.length == 0" icon="delete" @click="showDeleteRows" />
+        <q-btn flat :disable="loading > 0 || selected.length === 0" icon="delete" @click="showDeleteRows" />
       </template>
 
       <!-- 自定义列：需要特殊展示方式的列 -->

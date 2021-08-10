@@ -47,7 +47,6 @@
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
           <div
-            style="margin-left:25px"
             class="operation-title"
             :style="row.state == 1 ? '' : 'color:grey'"
             :loading="loading > 0"
@@ -133,7 +132,7 @@ export default {
         filters.startTime = filters.startTime ? new Date(filters.startTime).getTime() : '';
         filters.endTime = filters.endTime ? new Date(filters.endTime).getTime() + 1000 * 60 * 60 * 24 : '';
         Object.keys(filters).forEach((v) => {
-          if (filters[v] || filters[v] == 0) {
+          if (filters[v] || filters[v] === 0) {
             url += `&${v}=${filters[v]}`;
           }
         });

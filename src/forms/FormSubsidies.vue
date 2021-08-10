@@ -16,19 +16,20 @@
           <span class="dialog-main-title">金额：</span>
           <q-input
             class="dialog-main-input"
+            type="number"
             outlined
             stack-label
             dense
             placeholder="请输补贴金额"
             v-model="amount"
-            :rules="[(v) => !!v]"
+            :rules="[(v) => v > 0]"
           />
         </div>
         <q-btn
           class="dialog-main-btn"
           type="primary"
-          :loading="mutating > 0"
-          :disabled="mutating > 0"
+          :loading="loading > 0"
+          :disabled="loading > 0"
           label="确定"
           color="secondary"
         />
@@ -47,7 +48,6 @@ export default {
   props: ['selected', 'type'],
   data() {
     return {
-      mutating: 0,
       eventCategories: [],
 
       gql: {
@@ -67,6 +67,7 @@ export default {
   methods: {
     preSave() {},
     async goSubmit() {
+      this.loading++;
       let params = new FormData();
       params.append('amount', this.amount);
       params.append('roleId', this.edata.id);
@@ -75,10 +76,11 @@ export default {
       if (res.res) {
         this.$emit('submit', this.edata);
         this.hide();
-        return alert('发放补贴成功');
+        alert('发放补贴成功');
       } else {
         alert('发放补贴失败');
       }
+      this.loading--;
     },
   },
 };

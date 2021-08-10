@@ -7,27 +7,27 @@
         </div>
         <q-space></q-space>
         <q-tabs dense style="margin-right:22px" v-model="tab" align="left" active-color="secondary">
-          <q-tab name="tab1" label="今天" />
-          <q-tab name="tab3" label="昨天" />
-          <q-tab name="tab4" label="近7日" />
-          <q-tab name="tab5" label="近30日" />
+          <q-tab name="tab1" label="今天" @click="timeChange(1)" />
+          <q-tab name="tab3" label="昨天" @click="timeChange(2)" />
+          <q-tab name="tab4" label="近7日" @click="timeChange(3)" />
+          <q-tab name="tab5" label="近30日" @click="timeChange(4)" />
         </q-tabs>
       </div>
       <div class="top-body row">
         <div class="top-body-box row">
           <div class="card-body-box-xx-title">现金充值</div>
           <q-space></q-space>
-          <div class="card-body-box-xx-money">￥{{ xjcz }}</div>
+          <div class="card-body-box-xx-money">￥{{ total.rechargeSum || 0 }}</div>
         </div>
         <div class="top-body-box row">
           <div class="card-body-box-xx-title">补贴</div>
           <q-space></q-space>
-          <div class="card-body-box-xx-money">￥{{ bt }}</div>
+          <div class="card-body-box-xx-money">￥{{ total.allowanceSum || 0 }}</div>
         </div>
         <div class="top-body-box row">
           <div class="card-body-box-xx-title">消费</div>
           <q-space></q-space>
-          <div class="card-body-box-xx-money">￥{{ xf }}</div>
+          <div class="card-body-box-xx-money">￥{{ total.consumeSum || 0 }}</div>
         </div>
       </div>
     </div>
@@ -39,36 +39,59 @@
           </div>
         </div>
         <div class="card-body" style="padding:24px 30px;">
-          <div class="card-body">
+          <q-form class="card-body" @submit="goRecharge">
             <div class="card-body-box-cz row">
               <div class="card-body-box-cz-title">金额：</div>
               <q-space></q-space>
-              <q-input outlined dense class="card-body-box-cz-input" color="blue" placeholder="请输入金额"></q-input>
+              <q-input
+                v-model="amount1"
+                type="number"
+                outlined
+                dense
+                class="card-body-box-cz-input"
+                color="blue"
+                placeholder="请输入金额"
+                :rules="[(v) => v > 0]"
+              ></q-input>
             </div>
             <div class="card-body-box-cz row" style="margin-top:10px">
-              <div class="card-body-box-cz-title">姓名：</div>
+              <div class="card-body-box-cz-title">用户：</div>
               <q-space></q-space>
-              <q-input outlined dense class="card-body-box-cz-input" color="blue" placeholder="请输入姓名"></q-input>
+              <ComponentCombobox
+                class="card-body-box-cz-input"
+                v-model="user"
+                :options="users"
+                v-bind="filterAttrs"
+                :placeholder="!user || !user.value ? '请选择用户' : ''"
+                :rules="[(v) => !!v]"
+                @input="changeUser1"
+              />
             </div>
             <div class="card-body-box-cz row" style="margin-top:10px">
               <div class="card-body-box-cz-title">工号：</div>
               <q-space></q-space>
-              <q-input outlined dense class="card-body-box-cz-input" color="blue" placeholder="请输入工号"></q-input>
+              <q-input
+                v-model="jobnum"
+                outlined
+                dense
+                class="card-body-box-cz-input"
+                color="blue"
+                placeholder="请选择用户"
+                readonly
+              ></q-input>
             </div>
             <div class="card-body-box-cz row" style="margin-top:10px">
               <div class="card-body-box-cz-title">类型：</div>
               <q-space></q-space>
               <div class="card-body-box-cz-input">
-                <q-radio style="font-size:14px" v-model="shape" val="line1" label="充值" />
-                <q-radio style="margin-left:20px;font-size:14px" v-model="shape" val="line2" label="提现" />
-                <q-radio style="margin-left:20px;font-size:14px" v-model="shape" val="line3" label="补贴" />
-                <q-radio style="margin-left:20px;font-size:14px" v-model="shape" val="line4" label="退补" />
+                <q-radio style="font-size:14px" v-model="shape" :val="1" label="充值" />
+                <q-radio style="margin-left:20px;font-size:14px" v-model="shape" :val="2" label="提现" />
               </div>
             </div>
             <div class="card-body-box-cz row" style="margin-top:20px">
-              <q-btn color="secondary" style="width:100%;" label="确定"></q-btn>
+              <q-btn color="secondary" type="submit" style="width:100%;" :loading="loading > 0" label="确定"></q-btn>
             </div>
-          </div>
+          </q-form>
         </div>
       </div>
       <div class="card">
@@ -78,32 +101,51 @@
           </div>
         </div>
         <div class="card-body" style="padding:24px 30px;">
-          <div class="card-body">
+          <q-form class="card-body" @submit="goSubsidy">
             <div class="card-body-box-cz row">
               <div class="card-body-box-cz-title">金额：</div>
               <q-space></q-space>
               <q-input
+                v-model="amount2"
+                type="number"
                 outlined
                 dense
                 class="card-body-box-cz-input"
                 color="blue"
                 placeholder="请输入补贴金额"
+                :rules="[(v) => v > 0]"
               ></q-input>
             </div>
             <div class="card-body-box-cz row" style="margin-top:10px">
-              <div class="card-body-box-cz-title">姓名：</div>
+              <div class="card-body-box-cz-title">用户：</div>
               <q-space></q-space>
-              <q-input outlined dense class="card-body-box-cz-input" color="blue" placeholder="请输入姓名"></q-input>
+              <ComponentCombobox
+                class="card-body-box-cz-input"
+                v-model="user2"
+                :options="users"
+                v-bind="filterAttrs"
+                :placeholder="!user2 || !user2.value ? '请选择用户' : ''"
+                :rules="[(v) => !!v]"
+                @input="changeUser2"
+              />
             </div>
             <div class="card-body-box-cz row" style="margin-top:10px">
               <div class="card-body-box-cz-title">工号：</div>
               <q-space></q-space>
-              <q-input outlined dense class="card-body-box-cz-input" color="blue" placeholder="请输入工号"></q-input>
+              <q-input
+                v-model="jobnum2"
+                outlined
+                dense
+                class="card-body-box-cz-input"
+                color="blue"
+                placeholder="请选择用户"
+                readonly
+              ></q-input>
             </div>
             <div class="card-body-box-cz row" style="margin-top:70px">
-              <q-btn color="secondary" style="width:100%;" label="确定"></q-btn>
+              <q-btn color="secondary" style="width:100%;" type="submit" :loading="loading > 0" label="确定"></q-btn>
             </div>
-          </div>
+          </q-form>
         </div>
       </div>
       <div class="card">
@@ -113,41 +155,45 @@
           </div>
         </div>
         <div class="card-body" style="padding:24px 30px;">
-          <div class="card-body">
+          <q-form class="card-body" @submit="goRole">
             <div class="card-body-box-cz row">
               <div class="card-body-box-cz-title">金额：</div>
               <q-space></q-space>
               <q-input
+                v-model="amount3"
+                type="number"
                 outlined
                 dense
                 class="card-body-box-cz-input"
                 color="blue"
                 placeholder="请输入补贴金额"
+                :rules="[(v) => v > 0]"
               ></q-input>
             </div>
             <div class="card-body-box-cz row" style="margin-top:10px">
               <div class="card-body-box-cz-title">角色：</div>
               <q-space></q-space>
-              <q-select
+              <ComponentCombobox
                 class="card-body-box-cz-input"
-                outlined
-                dense
-                emit-value
-                map-options
-                v-model="model"
-                :options="options"
+                v-model="role"
+                :options="roles"
+                v-bind="filterAttrs"
+                :placeholder="!role || !role.value ? '请选择角色' : ''"
+                :rules="[(v) => !!v]"
               />
             </div>
             <div class="card-body-box-cz row" style="margin-top:120px">
-              <q-btn color="secondary" style="width:100%;" label="确定"></q-btn>
+              <q-btn color="secondary" style="width:100%;" type="submit" :loading="loading > 0" label="确定"></q-btn>
             </div>
-          </div>
+          </q-form>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { http } from '../utils/luch-request/index.js';
+import { date } from 'quasar';
 export default {
   name: 'PageHome',
   data() {
@@ -156,39 +202,129 @@ export default {
       conheight: {
         height: '',
       },
-      model: 0,
-      options: [
-        {
-          label: '全部',
-          value: 0,
-        },
-        {
-          label: '医生',
-          value: 1,
-        },
-        {
-          label: '护士',
-          value: 2,
-        },
-        {
-          label: '主任',
-          value: 3,
-        },
-      ],
+      filterAttrs: {
+        dense: true,
+        clearable: true,
+        mapOptions: true,
+        outlined: true,
+        color: 'blue',
+      },
+      amount1: '',
+      amount2: '',
+      amount3: '',
+      user: '',
+      user2: '',
+      users: [],
+      jobnum: '',
+      jobnum2: '',
+      role: '',
+      roles: [],
       tab: 'tab1',
-      shape: '',
-      xjcz: 100,
-      bt: 1000,
-      xf: 1234.24,
+      shape: 1,
+      filters: {},
+      total: {
+        allowanceSum: 0,
+        rechargeSum: 0,
+        consumeSum: 0,
+      },
+      loading: 0,
     };
   },
   created() {
     window.addEventListener('resize', this.getHeight);
     this.getHeight();
   },
+  async mounted() {
+    this.timeChange(1);
+    const users = await http.get('/user/get?limit=9999&page=1&state=1');
+    users.data.list.forEach((v) => {
+      v.value = v.id;
+      v.label = v.name;
+    });
+    this.users = users.data.list;
+    const roles = await http.get(`/role/get?limit=${999}&page=${1}&state=${1}`);
+    roles.data.list.forEach((v) => {
+      v.value = v.id;
+      v.label = v.name;
+    });
+    this.roles = roles.data.list;
+  },
   methods: {
     getHeight() {
       this.conheight.height = window.innerHeight - 66 + 'px';
+    },
+    async timeChange(type) {
+      let today = date.formatDate(new Date(), 'YYYY-MM-DD'),
+        oneday = 1000 * 60 * 60 * 24;
+      today = Date.parse(today);
+      if (type == 1) {
+        this.filters.startTime = today;
+        this.filters.endTime = today + oneday;
+      } else if (type == 2) {
+        this.filters.startTime = today - oneday;
+        this.filters.endTime = today;
+      } else if (type == 3) {
+        this.filters.startTime = today - 6 * oneday;
+        this.filters.endTime = today + oneday;
+      } else if (type == 4) {
+        this.filters.startTime = today - 29 * oneday;
+        this.filters.endTime = today + oneday;
+      }
+      let url = `/statistics/overview?startTime=${this.filters.startTime}&endTime=${this.filters.endTime}`;
+      const data = await http.get(url);
+      this.total = data.data;
+    },
+    changeUser1(e) {
+      this.jobnum = e ? e.workNo : '';
+    },
+    changeUser2(e) {
+      this.jobnum2 = e ? e.workNo : '';
+    },
+    async goRecharge() {
+      this.loading++;
+      let params = new FormData();
+      params.append('amount', this.amount1);
+      params.append('workNo', this.user.workNo);
+      params.append('name', this.user.name);
+      params.append('type', parseInt(this.shape));
+      const res = await http.post('/account/recharge', params);
+      if (res.res) {
+        this.timeChange(1);
+        alert(this.shape == 1 ? '充值成功' : '提现成功');
+      } else {
+        alert(this.shape == 1 ? '充值失败' : '提现失败');
+      }
+      this.loading--;
+    },
+    async goSubsidy() {
+      this.loading++;
+      let params = new FormData();
+      params.append('amount', this.amount2);
+      params.append('workNo', this.user2.workNo);
+      params.append('username', this.user2.name);
+      const res = await http.post('/distribute/user', params);
+      if (res.res) {
+        this.timeChange(1);
+        alert('发放补贴成功');
+      } else {
+        alert('发放补贴失败');
+      }
+      this.loading--;
+    },
+    async goRole() {
+      this.loading++;
+      let params = new FormData();
+      params.append('amount', this.amount3);
+      params.append('roleId', this.role.id);
+      params.append('roleName', this.role.name);
+      const res = await http.post('/distribute/role', params);
+      if (res.res) {
+        this.timeChange(1);
+        alert('发放补贴成功');
+      } else {
+        alert('发放补贴失败');
+      }
+      this.loading--;
     },
   },
 };

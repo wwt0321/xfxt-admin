@@ -150,6 +150,7 @@ import TableAll from 'src/tables/TableAll.vue';
 import TableStatisticalPersonSubsidy from 'src/tables/TableStatisticalPersonSubsidy.vue';
 import TableStatisticalConsumption from 'src/tables/TableStatisticalConsumption.vue';
 import TableStatisticalPersonPay from 'src/tables/TableStatisticalPersonPay.vue';
+import { date } from 'quasar';
 import { http } from '../utils/luch-request/index.js';
 
 export default {
@@ -219,8 +220,9 @@ export default {
       }
     },
     async timeChange(type) {
-      let today = Date.parse(new Date()),
+      let today = date.formatDate(new Date(), 'YYYY-MM-DD'),
         oneday = 1000 * 60 * 60 * 24;
+      today = Date.parse(today);
       if (type == 1) {
         this.filters.startTime = today;
         this.filters.endTime = today + oneday;

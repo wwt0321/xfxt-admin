@@ -212,7 +212,7 @@ export default {
       let url = `/user/get?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}`;
       if (this.filters) {
         Object.keys(this.filters).forEach((v) => {
-          if (this.filters[v] || this.filters[v] == 0) {
+          if (this.filters[v] || this.filters[v] === 0) {
             url += `&${v}=${this.filters[v]}`;
           }
         });

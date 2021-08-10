@@ -49,10 +49,10 @@ export default {
           align: 'center',
           format: (v) => date.formatDate(v, 'YYYY-MM-DD HH:mm:ss'),
         },
-        { name: 'name', label: '姓名', field: 'name', align: 'center' },
+        { name: 'userName', label: '姓名', field: 'userName', align: 'center' },
         { name: 'amount', label: '消费金额', field: 'amount', align: 'center', format: (v) => `￥${v}` },
-        { name: 'content', label: '消防内容', field: 'content', align: 'center' },
-        { name: 'shop', label: '消费商户', field: 'shop', align: 'center' },
+        { name: 'contain', label: '消费内容', field: 'contain', align: 'center' },
+        { name: 'merchantsName', label: '消费商户', field: 'merchantsName', align: 'center' },
       ],
 
       rows: [],
@@ -75,7 +75,7 @@ export default {
       if (this.search) {
         let filters = { ...this.search };
         Object.keys(filters).forEach((v) => {
-          if (filters[v] || filters[v] == 0) {
+          if (filters[v] || filters[v] === 0) {
             url += `&${v}=${filters[v]}`;
           }
         });

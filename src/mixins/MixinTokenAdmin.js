@@ -23,6 +23,7 @@ const token = (jwtToken) => {
   if (!localStorage.jwtTime || isNearExpired) {
     localStorage.removeItem(tokenKey);
     localStorage.removeItem('jwtTime');
+    localStorage.removeItem('to');
     return false;
   }
   return token;
@@ -56,7 +57,7 @@ const MixinTokenAdmin = {
         localStorage.setItem('jwtTime', data.data.time);
         localStorage.setItem(tokenKey, data.authid);
         token();
-        this.$router.replace(localStorage.to ? localStorage.to : '/home');
+        this.$router.replace(localStorage.to && localStorage.to != '/' ? localStorage.to : '/home');
         return true;
       } else {
         alert(data.msg);

@@ -13,7 +13,7 @@ const isValidDateString = (str) => {
     return false;
   }
   const id = parseInt(sd, 10);
-  const L = (sy % 4 == 0 && sy % 100 != 0) || sy % 400 == 0 ? 1 : 0; // 是否闰年
+  const L = (sy % 4 === 0 && sy % 100 != 0) || sy % 400 === 0 ? 1 : 0; // 是否闰年
   const t = [31, 28 + L, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][im - 1]; // 当月有几天
   if (id < 1 || id > t) {
     return false;

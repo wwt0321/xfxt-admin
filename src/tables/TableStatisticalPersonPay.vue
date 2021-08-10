@@ -74,7 +74,7 @@ export default {
       if (this.search) {
         let filters = { ...this.search };
         Object.keys(filters).forEach((v) => {
-          if (filters[v] || filters[v] == 0) {
+          if (filters[v] || filters[v] === 0) {
             url += `&${v}=${filters[v]}`;
           }
         });

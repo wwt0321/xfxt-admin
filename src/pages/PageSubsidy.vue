@@ -14,7 +14,7 @@
           :rules="[(v) => v >= 0]"
         ></q-input>
       </div>
-      <q-btn class="top-filter-btn " color="secondary" label="补贴发放" @click="grant"></q-btn>
+      <q-btn class="top-filter-btn " color="secondary" label="补贴发放" :loading="loading > 0" @click="grant"></q-btn>
       <q-btn class="top-filter-btn " color="secondary" label="保存方案" @click="showScheme"></q-btn>
     </div>
     <q-space></q-space>
@@ -60,6 +60,7 @@ export default {
       },
       roles: [],
       allowances: [],
+      loading: 0,
     };
   },
   async mounted() {
@@ -90,7 +91,7 @@ export default {
         }
         sum += parseFloat(this.allowances[i].allowance);
       }
-      if (sum == 0) {
+      if (sum === 0) {
         return alert('至少得有一个角色补贴金额大于0');
       }
       this.isShow.scheme = true;
@@ -106,9 +107,10 @@ export default {
         }
         sum += parseFloat(this.allowances[i].allowance);
       }
-      if (sum == 0) {
+      if (sum === 0) {
         return alert('至少得有一个角色补贴金额大于0');
       }
+      this.loading++;
       let ids = this.allowances.map((v) => v.id);
       let roleNames = this.allowances.map((v) => v.name);
       let allowances = this.allowances.map((v) => v.allowance || 0);
@@ -119,7 +121,7 @@ export default {
       console.log(edata);
       let params = new FormData();
       Object.keys(edata).forEach((v) => {
-        params.append(v, edata[v] == 0 ? 0 : edata[v] || '');
+        params.append(v, edata[v] === 0 ? 0 : edata[v] || '');
       });
       let res = await http.post('/distribute/plan', params);
       if (res.res) {
@@ -127,6 +129,7 @@ export default {
       } else {
         alert('发放补贴失败');
       }
+      this.loading--;
     },
   },
 };
@@ -150,7 +153,6 @@ export default {
   font-weight: 600;
   font-size: 16px;
   line-height: 22px;
-  margin-left: 20px;
 }
 .top-filter {
   margin-top: 20px;

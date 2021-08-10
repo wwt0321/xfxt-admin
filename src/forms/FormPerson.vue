@@ -61,8 +61,8 @@
         <q-btn
           class="dialog-main-btn"
           type="submit"
-          :loading="mutating > 0"
-          :disabled="mutating > 0"
+          :loading="loading > 0"
+          :disabled="loading > 0"
           label="保存"
           color="secondary"
         />
@@ -81,7 +81,6 @@ export default {
   props: ['selected', 'type'],
   data() {
     return {
-      mutating: 0,
       eventCategories: [],
 
       gql: {

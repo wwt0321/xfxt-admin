@@ -36,8 +36,8 @@
         <q-btn
           class="dialog-main-btn"
           type="primary"
-          :loading="mutating > 0"
-          :disabled="mutating > 0"
+          :loading="loading > 0"
+          :disabled="loading > 0"
           label="保存"
           color="secondary"
         />
@@ -57,7 +57,6 @@ export default {
   data() {
     return {
       shape: '0',
-      mutating: 0,
       model: 0,
       gql: {
         create: '',
@@ -96,7 +95,7 @@ export default {
       this.roles.forEach((v) => {
         sum += parseFloat(v.allowance);
       });
-      if (sum == 0) {
+      if (sum === 0) {
         return alert('至少得有一个角色补贴金额大于0');
       }
       this.edata.ids = this.roles.map((v) => v.value).join(',');

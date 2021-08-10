@@ -24,8 +24,8 @@
         <q-btn
           class="dialog-main-btn"
           type="primary"
-          :loading="mutating > 0"
-          :disabled="mutating > 0"
+          :loading="loading > 0"
+          :disabled="loading > 0"
           label="保存"
           color="secondary"
         />
@@ -45,7 +45,6 @@ export default {
   data() {
     return {
       shape: '0',
-      mutating: 0,
 
       gql: {
         create: '/role/add',
@@ -64,13 +63,15 @@ export default {
     preSave() {},
     async goSubmit() {
       if (this.edata.id) {
+        this.loading++;
         const res = await http.put(`/role/rename/${this.edata.id}?name=${this.edata.name}`);
         if (res.res) {
           this.$emit('submit', this.edata);
-          return this.hide();
+          this.hide();
         } else {
           alert('修改失败');
         }
+        this.loading--;
       } else {
         this.submit('');
       }

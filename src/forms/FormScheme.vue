@@ -23,8 +23,8 @@
         <q-btn
           class="dialog-main-btn"
           type="submit"
-          :loading="mutating > 0"
-          :disabled="mutating > 0"
+          :loading="loading > 0"
+          :disabled="loading > 0"
           label="保存"
           color="secondary"
         />
@@ -43,7 +43,6 @@ export default {
   data() {
     return {
       shape: '0',
-      mutating: 0,
 
       gql: {
         create: '/plan/add',

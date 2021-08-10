@@ -16,32 +16,34 @@
           <span class="dialog-main-title">每日消费上限：</span>
           <q-input
             class="dialog-main-input"
+            type="number"
             outlined
             stack-label
             dense
             placeholder="请输每日消费上限金额"
             v-model="edata.max"
-            :rules="[(v) => !!v]"
+            :rules="[(v) => v > 0]"
           />
         </div>
         <div class="dialog-main row">
           <div class="dialog-main-title">每次消费金额：</div>
           <q-input
             class="dialog-main-input"
+            type="number"
             outlined
             stack-label
             dense
             placeholder="请输入单次消费金额"
             v-model="edata.limit"
-            :rules="[(v) => !!v]"
+            :rules="[(v) => v > 0]"
           />
         </div>
 
         <q-btn
           class="dialog-main-btn"
           type="primary"
-          :loading="mutating > 0"
-          :disabled="mutating > 0"
+          :loading="loading > 0"
+          :disabled="loading > 0"
           label="确定"
           color="secondary"
         />
@@ -60,7 +62,6 @@ export default {
   props: ['selected', 'type'],
   data() {
     return {
-      mutating: 0,
       eventCategories: [],
 
       gql: {
@@ -79,13 +80,15 @@ export default {
   methods: {
     preSave() {},
     async goSubmit() {
+      this.loading++;
       const res = await http.put(`/role/set/${this.edata.id}?limit=${this.edata.limit}&max=${this.edata.max}`);
       if (res.res) {
         this.$emit('submit', this.edata);
-        return this.hide();
+        this.hide();
       } else {
         alert('设置失败');
       }
+      this.loading--;
     },
   },
 };

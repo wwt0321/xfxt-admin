@@ -53,8 +53,8 @@
         <q-btn
           class="dialog-main-btn"
           type="primary"
-          :loading="mutating > 0"
-          :disabled="mutating > 0"
+          :loading="loading > 0"
+          :disabled="loading > 0"
           label="确定"
           color="secondary"
         />
@@ -65,7 +65,6 @@
 
 <script>
 import { MixinForm } from '../mixins/MixinForm';
-import { http } from '../utils/luch-request/index.js';
 
 export default {
   name: 'FormEventType',
@@ -73,7 +72,6 @@ export default {
   props: ['selected', 'type'],
   data() {
     return {
-      mutating: 0,
       eventCategories: [],
 
       gql: {
