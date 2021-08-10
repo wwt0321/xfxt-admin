@@ -65,7 +65,7 @@ export default {
   },
 
   async mounted() {
-    this.refresh();
+    //this.refresh();
   },
 
   methods: {

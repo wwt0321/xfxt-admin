@@ -48,17 +48,17 @@
         <div class="top-body-box row">
           <div class="card-body-box-xx-title">现金充值</div>
           <q-space></q-space>
-          <div class="card-body-box-xx-money">￥{{}}</div>
+          <div class="card-body-box-xx-money">￥{{ total.rechargeSum || 0 }}</div>
         </div>
         <div class="top-body-box row">
           <div class="card-body-box-xx-title">补贴</div>
           <q-space></q-space>
-          <div class="card-body-box-xx-money">￥{{}}</div>
+          <div class="card-body-box-xx-money">￥{{ total.allowanceSum || 0 }}</div>
         </div>
         <div class="top-body-box row">
           <div class="card-body-box-xx-title">消费</div>
           <q-space></q-space>
-          <div class="card-body-box-xx-money">￥{{}}</div>
+          <div class="card-body-box-xx-money">￥{{ total.consumeSum || 0 }}</div>
         </div>
       </div>
       <div class="all-top row">
@@ -84,9 +84,9 @@
         </q-tabs>
       </div>
       <div style="padding:20px">
-        <table-statistical-person-pay v-show="tab3 == 'tab1'" />
-        <table-statistical-person-subsidy v-show="tab3 == 'tab2'" />
-        <table-statistical-consumption v-show="tab3 == 'tab3'" />
+        <table-statistical-person-pay ref="table31" v-show="tab3 == 'tab1'" />
+        <table-statistical-person-subsidy ref="table32" v-show="tab3 == 'tab2'" />
+        <table-statistical-consumption ref="table33" v-show="tab3 == 'tab3'" />
       </div>
     </div>
     <!--门店统计-->
@@ -150,6 +150,7 @@ import TableAll from 'src/tables/TableAll.vue';
 import TableStatisticalPersonSubsidy from 'src/tables/TableStatisticalPersonSubsidy.vue';
 import TableStatisticalConsumption from 'src/tables/TableStatisticalConsumption.vue';
 import TableStatisticalPersonPay from 'src/tables/TableStatisticalPersonPay.vue';
+import { http } from '../utils/luch-request/index.js';
 
 export default {
   components: { TableAll, TableStatisticalPersonSubsidy, TableStatisticalConsumption, TableStatisticalPersonPay },
@@ -178,6 +179,11 @@ export default {
       filters: {},
       timeStart: '',
       timeEnd: '',
+      total: {
+        allowanceSum: 0,
+        rechargeSum: 0,
+        consumeSum: 0,
+      },
     };
   },
   created() {
@@ -201,13 +207,18 @@ export default {
         this.all = false;
         this.persons = true;
         this.shops = false;
+        setTimeout(() => {
+          this.$refs.table31.refresh();
+          this.$refs.table32.refresh();
+          this.$refs.table33.refresh();
+        });
       } else {
         this.all = false;
         this.persons = false;
         this.shops = true;
       }
     },
-    timeChange(type) {
+    async timeChange(type) {
       let today = Date.parse(new Date()),
         oneday = 1000 * 60 * 60 * 24;
       if (type == 1) {
@@ -234,6 +245,9 @@ export default {
         this.timeStart = '';
         this.timeEnd = '';
       }
+      let url = `/statistics/overview?startTime=${this.filters.startTime}&endTime=${this.filters.endTime}`;
+      const data = await http.get(url);
+      this.total = data.data;
       setTimeout(() => {
         this.$refs.table21.refresh();
         this.$refs.table22.refresh();
