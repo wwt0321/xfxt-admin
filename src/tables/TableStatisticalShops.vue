@@ -42,17 +42,8 @@ export default {
 
       // 表格列设置
       columns: [
-        {
-          name: 'time',
-          label: '时间',
-          field: 'time',
-          align: 'center',
-          format: (v) => date.formatDate(v, 'YYYY-MM-DD HH:mm:ss'),
-        },
-        { name: 'name', label: '姓名', field: 'name', align: 'center' },
-        { name: 'amount', label: '消费金额', field: 'amount', align: 'center', format: (v) => `￥${v}` },
-        { name: 'content', label: '消费内容', field: 'content', align: 'center' },
         { name: 'shop', label: '消费商户', field: 'shop', align: 'center' },
+        { name: 'amount', label: '消费金额', field: 'amount', align: 'center', format: (v) => `￥${v}` },
       ],
 
       rows: [],
@@ -64,25 +55,17 @@ export default {
     };
   },
 
-  async mounted() {
-    //this.refresh();
-  },
+  async mounted() {},
 
   methods: {
     async refresh() {
       this.selected = [];
-      let url = `/statistics/user?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}&type=3`;
-      if (this.search) {
-        let filters = { ...this.search };
-        Object.keys(filters).forEach((v) => {
-          if (filters[v] || filters[v] == 0) {
-            url += `&${v}=${filters[v]}`;
-          }
-        });
-      }
-      const users = await http.get(url);
-      this.rows = users.data.list;
-      this.pagination.rowsNumber = users.data.num;
+      let filters = { ...this.search };
+      let url = `/statistics/store?startTime=${filters.startTime}&endTime=${filters.endTime}`;
+      const store = await http.get(url);
+      console.log(3333, store);
+      //this.rows = store.data.list;
+      //this.pagination.rowsNumber = store.data.num;
     },
   },
 };
