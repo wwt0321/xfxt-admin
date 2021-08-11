@@ -15,6 +15,8 @@ const routes = [
       { path: '/password', component: () => import('pages/PagePassword.vue') },
       { path: '/admin', component: () => import('pages/PageAdmin.vue') },
       { path: '/code', component: () => import('pages/PageCode.vue') },
+      { path: '/authority', component: () => import('pages/PageAuthority.vue') },
+      { path: '/function', component: () => import('pages/PageFunction.vue') },
       // @TODO 默认路径
       // {
       //   path: '',

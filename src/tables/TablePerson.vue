@@ -59,6 +59,7 @@
     <q-dialog v-model="isShow.edit" no-backdrop-dismiss>
       <form-person
         v-if="isShow.edit"
+        :primary-id="primaryId"
         :selected="selected"
         @hide="hideEdit"
         @submit="refresh"
@@ -72,8 +73,8 @@
     <q-dialog v-model="isShow.pay" no-backdrop-dismiss>
       <form-pay
         v-if="isShow.pay"
-        :selected="selected"
         :primary-id="primaryId"
+        :selected="selected"
         @hide="hidePay"
         @submit="refresh"
         style="width: 390px;"
@@ -86,8 +87,8 @@
     <q-dialog v-model="isShow.subsidy" no-backdrop-dismiss>
       <form-subsidy
         v-if="isShow.subsidy"
-        :selected="selected"
         :primary-id="primaryId"
+        :selected="selected"
         @hide="hideSubsidy"
         @submit="refresh"
         style="width: 410px;"
@@ -99,8 +100,8 @@
     <q-dialog v-model="isShow.binding" no-backdrop-dismiss>
       <form-binding-card
         v-if="isShow.binding"
-        :selected="selected"
         :primary-id="primaryId"
+        :selected="selected"
         @hide="hideBinding"
         @submit="refresh"
         style="width: 500px;"
@@ -113,9 +114,9 @@
       <form-recharge-record
         v-if="isShow.rechargeRecord"
         :primary-id="primaryId"
+        :selected="selected"
         @hide="hideRechargeRecord"
         @submit="refresh"
-        :selected="selected"
         style="width: 800px;"
         :locked="locked"
         :type="filters.type"
@@ -127,9 +128,9 @@
       <form-expense
         v-if="isShow.expense"
         :primary-id="primaryId"
+        :selected="selected"
         @hide="hideExpemse"
         @submit="refresh"
-        :selected="selected"
         style="width: 800px;"
         :locked="locked"
         :type="filters.type"
@@ -223,6 +224,7 @@ export default {
     },
     showPay(row) {
       this.isShow.pay = true;
+      this.primaryId = row.id;
       this.selected = [row];
     },
     hidePay() {
@@ -230,6 +232,7 @@ export default {
     },
     showSubsidy(row) {
       this.isShow.subsidy = true;
+      this.primaryId = row.id;
       this.selected = [row];
     },
     hideSubsidy() {
@@ -244,10 +247,12 @@ export default {
     },
     showEdit(row) {
       this.isShow.edit = true;
+      this.primaryId = row.id;
       this.selected = [row];
     },
     showRechargeRecord(row) {
       this.isShow.rechargeRecord = true;
+      this.primaryId = row.id;
       this.selected = [row];
     },
     hideRechargeRecord() {
@@ -255,6 +260,7 @@ export default {
     },
     showExpense(row) {
       this.isShow.expense = true;
+      this.primaryId = row.id;
       this.selected = [row];
     },
     hideExpemse() {

@@ -45,13 +45,13 @@ export default {
         {
           name: 'time',
           label: '时间',
-          field: 'id',
-          align: 'time',
+          field: 'time',
+          align: 'center',
           format: (v) => date.formatDate(v, 'YYYY-MM-DD HH:mm:ss'),
         },
         { name: 'amount', label: '金额', field: 'amount', align: 'center', format: (v) => `￥${v}` },
-        { name: 'content', label: '内容', field: 'content', align: 'center' },
-        { name: 'shop', label: '商户', field: 'shop', align: 'center' },
+        { name: 'contain', label: '内容', field: 'contain', align: 'center' },
+        { name: 'merchantsName', label: '商户', field: 'merchantsName', align: 'center' },
       ],
 
       rows: [],
@@ -66,9 +66,10 @@ export default {
   async mounted() {},
 
   methods: {
-    async refresh(type) {
+    async refresh() {
       this.selected = [];
-      let url = `/expose/getRecords?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}&workNo=${this.work}`;
+      //let url = `/expose/getRecords?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}&workNo=${this.work}&random=${this.random}&sign=${this.sign}`;
+      let url = `/statistics/user?limit=${this.pagination.rowsPerPage}&page=${this.pagination.page}&workNo=${this.work}&type=3`;
       const users = await http.get(url);
       this.rows = users.data.list;
       this.pagination.rowsNumber = users.data.num;

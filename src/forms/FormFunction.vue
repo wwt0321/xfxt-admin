@@ -2,37 +2,49 @@
   <q-card>
     <q-form @submit="submit('')">
       <div class="row top">
-        <div class="dialog-title">{{ edata.id ? '编辑' : '新增' }}账号</div>
+        <div class="dialog-title">{{ edata.id ? '编辑' : '新增' }}菜单</div>
         <q-space />
         <q-img class="dialog-close" src="../assets/close.svg" @click="hide"></q-img>
       </div>
       <q-card-section style="padding:25px 40px">
         <!-- 表单内容 -->
         <div class="dialog-main row">
-          <div class="dialog-main-title">用户名：</div>
+          <div class="dialog-main-title">ID：</div>
           <q-input
             class="dialog-main-input"
             outlined
             stack-label
             dense
-            placeholder="请输入用户名"
+            placeholder="请输入ID"
+            v-model="edata.id"
+            :rules="[(v) => !!v]"
+          />
+        </div>
+        <div class="dialog-main row">
+          <div class="dialog-main-title">名称：</div>
+          <q-input
+            class="dialog-main-input"
+            outlined
+            stack-label
+            dense
+            placeholder="请输入名称"
             v-model="edata.name"
             :rules="[(v) => !!v]"
           />
         </div>
         <div class="dialog-main row">
-          <div class="dialog-main-title">系统角色：</div>
-          <q-select
+          <div class="dialog-main-title">图标：</div>
+          <q-input class="dialog-main-input" outlined stack-label dense placeholder="请输入图标" v-model="edata.icon" />
+        </div>
+        <div class="dialog-main row">
+          <div class="dialog-main-title">前端路径：</div>
+          <q-input
             class="dialog-main-input"
             outlined
             stack-label
             dense
-            map-options
-            emit-value
-            multiple
-            v-model="edata.roles"
-            :options="roles"
-            :rules="[(v) => !!v && v.length > 0]"
+            placeholder="请输入前端路径"
+            v-model="edata.route"
           />
         </div>
         <q-btn
@@ -59,34 +71,33 @@ export default {
   data() {
     return {
       gql: {
-        create: '/system/addUser',
-        update: '/system/updateUser',
+        create: '/system/addFunction',
+        update: '/system/updateFunction',
       },
 
       edata: {},
-      roles: [],
+      filterAttrs: {
+        dense: true,
+        clearable: true,
+        mapOptions: true,
+        outlined: true,
+        emitValue: true,
+        multiple: true,
+      },
+      apis: [],
     };
   },
 
   async mounted() {
     let edata = this.selected[0] ? { ...this.selected[0] } : {};
-    //edata.api = edata.auth ? edata.auth.split(',') : [];
-    //edata.api.forEach((v, n) => {
-    //  edata.api[n] = parseInt(v);
-    //});
-    //console.log(edata);
-    edata.password = edata.id ? '' : '123456';
     this.edata = edata;
-    //this.$forceUpdate();
-    //const roles = await http.get(`/system/getRoles`);
-    //roles.data.forEach((v) => {
-    //  v.value = v.id;
-    //  v.label = v.desc;
-    //});
-    //this.roles = roles.data;
   },
   methods: {
     async preSave() {},
+    ddd() {
+      this.$forceUpdate();
+      console.log(this.edata);
+    },
   },
 };
 </script>
@@ -125,7 +136,7 @@ export default {
   line-height: 40px;
 }
 .dialog-main-input {
-  width: 180px;
+  width: 200px;
 }
 .dialog-main-btn {
   margin-top: 12px;

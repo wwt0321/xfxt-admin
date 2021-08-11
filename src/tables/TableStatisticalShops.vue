@@ -42,13 +42,6 @@ export default {
 
       // 表格列设置
       columns: [
-        {
-          name: 'time',
-          label: '时间',
-          field: 'time',
-          align: 'center',
-          format: (v) => date.formatDate(v, 'YYYY-MM-DD HH:mm:ss'),
-        },
         { name: 'merchantsName', label: '门店', field: 'merchantsName', align: 'center' },
         { name: 'amount', label: '收入', field: 'amount', align: 'center', format: (v) => `￥${v}` },
       ],

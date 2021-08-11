@@ -16,16 +16,23 @@
       flat
     >
       <q-td slot="body-cell-operation" slot-scope="{ row }">
-        <div class="operation" v-if="row.name != 'admin'">
-          <!--<div class="operation-title" @click="showEdit(row)">编辑</div>-->
-          <div class="operation-title" @click="resetPassword(row)">重置密码</div>
-          <div class="operation-title" @click="del(row)">删除</div>
+        <div class="operation">
+          <div class="operation-title" @click="showEdit(row)">编辑</div>
+          <div class="operation-title" v-if="row.id != 1" @click="resetPassword(row)">重置密码</div>
+          <div class="operation-title" v-if="row.id != 1" @click="del(row)">删除</div>
         </div>
       </q-td>
     </q-table>
     <!-- 添加/编辑用户 -->
     <q-dialog v-model="isShow.edit" no-backdrop-dismiss>
-      <form-admin v-if="isShow.edit" :selected="selected" @hide="hideEdit" @submit="refresh" style="width: 390px;">
+      <form-admin
+        v-if="isShow.edit"
+        :primary-id="primaryId"
+        :selected="selected"
+        @hide="hideEdit"
+        @submit="refresh"
+        style="width: 390px;"
+      >
       </form-admin>
     </q-dialog>
   </div>
@@ -93,6 +100,7 @@ export default {
     },
     showEdit(row) {
       this.isShow.edit = true;
+      this.primaryId = row.id;
       this.selected = [row];
     },
     goSearch(select) {

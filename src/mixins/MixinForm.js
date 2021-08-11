@@ -44,7 +44,7 @@ export const MixinForm = {
         params.append(v, this.edata[v] === 0 ? 0 : this.edata[v] || '');
       });
       let res = '';
-      if (this.edata.id) {
+      if (this.primaryId) {
         res = await http.put(this.gql.update, params);
       } else {
         res = await http.post(this.gql.create, params);
@@ -52,9 +52,9 @@ export const MixinForm = {
       if (res.res) {
         this.$emit('submit', this.edata);
         this.hide();
-        alert(this.edata.id ? `${tip || '编辑'}成功` : `${tip || '新建'}成功`);
+        alert(this.primaryId ? `${tip || '编辑'}成功` : `${tip || '新建'}成功`);
       } else {
-        alert(this.edata.id ? `${tip || '编辑'}失败` : `${tip || '新建'}失败`);
+        alert(this.primaryId ? `${tip || '编辑'}失败` : `${tip || '新建'}失败`);
       }
       this.loading--;
     },

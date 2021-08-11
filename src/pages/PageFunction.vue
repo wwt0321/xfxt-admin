@@ -1,26 +1,21 @@
 <template>
   <div class="q-pa-lg app" :style="conheight">
     <div class="top row">
-      <div class="top-title">账号管理</div>
-      <div class="top-filter">
-        <div class="top-filter-title">账号：</div>
-        <q-input v-model="searches.name" outlined dense class="top-filter-input" placeholder="请输入账号"></q-input>
-        <q-btn class="top-filter-btn" color="secondary" label="查询" @click="search"></q-btn>
-      </div>
+      <div class="top-title">菜单管理</div>
     </div>
     <div class="body" :style="bodyheight">
-      <q-btn class="body-btn" color="secondary" label="新增账号" @click="addPerson"></q-btn>
-      <table-admin ref="table" />
+      <q-btn class="body-btn" color="secondary" label="新增菜单" @click="goAdd"></q-btn>
+      <table-function ref="table" />
     </div>
   </div>
 </template>
 
 <script>
-import TableAdmin from 'src/tables/TableAdmin.vue';
+import TableFunction from 'src/tables/TableFunction.vue';
 
 export default {
-  name: 'PageAdmin',
-  components: { TableAdmin },
+  name: 'PageFunction',
+  components: { TableFunction },
   data() {
     return {
       conheight: {
@@ -30,9 +25,6 @@ export default {
         height: '',
       },
       filters: {},
-      searches: {
-        name: '',
-      },
     };
   },
 
@@ -42,11 +34,8 @@ export default {
   },
 
   methods: {
-    addPerson() {
+    goAdd() {
       this.$refs.table.showCreate();
-    },
-    search() {
-      this.$refs.table.goSearch(this.searches);
     },
   },
 };

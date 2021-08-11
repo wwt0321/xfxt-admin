@@ -40,9 +40,9 @@
       <form-shop
         v-if="isShow.edit"
         :primary-id="primaryId"
+        :selected="selected"
         @hide="hideEdit"
         @submit="refresh"
-        :selected="selected"
         style="width: 430px;"
         :locked="locked"
         :type="filters.type"
@@ -122,6 +122,7 @@ export default {
     },
     showEdit(row) {
       this.isShow.edit = true;
+      this.primaryId = row.id;
       this.selected = [row];
     },
     goSearch(select) {

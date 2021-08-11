@@ -151,6 +151,27 @@ export default {
         route: '/statistical',
         parentId: '10000',
       },
+      {
+        id: 20100,
+        name: '菜单管理',
+        icon: 'https',
+        route: '/function',
+        parentId: '10000',
+      },
+      {
+        id: 20200,
+        name: '账号管理',
+        icon: 'https',
+        route: '/admin',
+        parentId: '10000',
+      },
+      {
+        id: 20300,
+        name: '权限管理',
+        icon: 'https',
+        route: '/authority',
+        parentId: '10000',
+      },
     ];
     this.click = this.functions.findIndex((v) => v.route == this.$route.path);
 
