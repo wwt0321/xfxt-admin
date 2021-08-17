@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit('')">
+    <q-form @submit="goSubmit">
       <div class="row top">
         <div class="dialog-title">{{ edata.id ? '编辑' : '新增' }}账号</div>
         <q-space />
@@ -70,23 +70,30 @@ export default {
 
   async mounted() {
     let edata = this.selected[0] ? { ...this.selected[0] } : {};
-    //edata.api = edata.auth ? edata.auth.split(',') : [];
-    //edata.api.forEach((v, n) => {
-    //  edata.api[n] = parseInt(v);
-    //});
-    //console.log(edata);
-    edata.password = edata.id ? '' : '123456';
+    edata.roles = edata.roleIds ? edata.roleIds.split(',') : [];
+    edata.roles.forEach((v, n) => {
+      edata.roles[n] = parseInt(v);
+    });
+    edata.password = '123456';
+    if (edata.id) {
+      delete edata.password;
+    }
+    console.log(edata);
     this.edata = edata;
-    //this.$forceUpdate();
-    //const roles = await http.get(`/system/getRoles`);
-    //roles.data.forEach((v) => {
-    //  v.value = v.id;
-    //  v.label = v.desc;
-    //});
-    //this.roles = roles.data;
+    this.$forceUpdate();
+    const roles = await http.get(`/system/getRoles`);
+    roles.data.forEach((v) => {
+      v.value = v.id;
+      v.label = v.name;
+    });
+    this.roles = roles.data;
   },
   methods: {
     async preSave() {},
+    goSubmit() {
+      this.edata.roleIds = this.edata.roles.join(',');
+      this.submit('');
+    },
   },
 };
 </script>

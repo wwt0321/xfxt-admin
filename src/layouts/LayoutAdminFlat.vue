@@ -99,8 +99,8 @@ export default {
     //日期
     this.date = date.formatDate(new Date(), 'YYYY年M月D日 dddd');
 
-    /*const { functions } = await this.grequest('functions');
-    this.functions = functions;*/
+    //const { functions } = await this.grequest('functions');
+    this.functions = JSON.parse(localStorage.user).modules;
     this.functions = [
       {
         id: 10100,

@@ -16,9 +16,9 @@ const token = (jwtToken) => {
   if (!token) {
     return false;
   }
-  const time = localStorage.jwtTime || 0;
+  const time = localStorage.jwtTime ? parseInt(localStorage.jwtTime) : 0;
   // 是否快要过期
-  const isNearExpired = time - new Date() / 1000 < 3600;
+  const isNearExpired = time - new Date() < 3600;
   // 必须有 id 且有效期够长
   if (!localStorage.jwtTime || isNearExpired) {
     localStorage.removeItem(tokenKey);

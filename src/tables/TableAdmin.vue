@@ -18,8 +18,10 @@
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
           <div class="operation-title" @click="showEdit(row)">编辑</div>
-          <div class="operation-title" v-if="row.id != 1" @click="resetPassword(row)">重置密码</div>
-          <div class="operation-title" v-if="row.id != 1" @click="del(row)">删除</div>
+          <div class="operation-title" v-if="row.id != 1" :loading="loading > 0" @click="resetPassword(row)">
+            重置密码
+          </div>
+          <div class="operation-title" v-if="row.id != 1" :loading="loading > 0" @click="del(row)">删除</div>
         </div>
       </q-td>
     </q-table>
@@ -65,6 +67,7 @@ export default {
       columns: [
         { name: 'id', label: '序号', field: 'id', align: 'center' },
         { name: 'name', label: '姓名', field: 'name', align: 'center' },
+        { name: 'roleNames', label: '角色', field: 'roleNames', align: 'center' },
         { name: 'operation', label: '操作', field: 'operation', align: 'center' },
       ],
 
@@ -95,7 +98,7 @@ export default {
         });
       }
       const users = await http.get(url);
-      this.rows = users.data;
+      this.rows = users.data.list;
       this.pagination.rowsNumber = users.data.num;
     },
     showEdit(row) {
@@ -115,7 +118,7 @@ export default {
       }
 
       this.loading++;
-      const res = await http.put(`/system/updateUser?id=${id}&password=123456`);
+      const res = await http.put(`/system/updatePwd?id=${id}&pwd=123456`);
       console.log(res);
       if (res.res) {
         alert('重置成功');
