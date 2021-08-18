@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="body" :style="bodyheight">
-      <q-btn class="body-btn" color="secondary" label="新增用户" @click="addPerson"></q-btn>
+      <q-btn class="body-btn" color="secondary" label="新增用户" v-if="isbase" @click="addPerson"></q-btn>
       <table-person ref="table" />
     </div>
   </div>
@@ -56,9 +56,15 @@ export default {
         roleId: '',
       },
       roles: [],
+      isbase: false,
     };
   },
   async mounted() {
+    let sroles = JSON.parse(localStorage.user).roleList;
+    let index2 = sroles.findIndex((v) => v.id == 2);
+    if (index2 > -1) {
+      this.isbase = true;
+    }
     window.addEventListener('resize', this.getHeight);
     this.getHeight();
     const roles = await http.get(`/role/get?limit=${999}&page=${1}&state=${1}`);

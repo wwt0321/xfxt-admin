@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="body" :style="bodyheight">
-      <q-btn class="body-btn" color="secondary" label="新增角色" @click="addRole"></q-btn>
+      <q-btn class="body-btn" color="secondary" label="新增角色" v-if="isbase" @click="addRole"></q-btn>
       <table-role ref="table" />
     </div>
   </div>
@@ -37,11 +37,19 @@ export default {
       searches: {
         name: '',
       },
+      isbase: false,
     };
   },
   created() {
     window.addEventListener('resize', this.getHeight);
     this.getHeight();
+  },
+  async mounted() {
+    let sroles = JSON.parse(localStorage.user).roleList;
+    let index2 = sroles.findIndex((v) => v.id == 2);
+    if (index2 > -1) {
+      this.isbase = true;
+    }
   },
   methods: {
     getHeight() {

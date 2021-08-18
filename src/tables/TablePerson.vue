@@ -30,7 +30,7 @@
       <q-td style="text-align:center;" slot="body-cell-balance" slot-scope="{ row }">
         <div class="operation">
           <div>￥{{ row.balance }}</div>
-          <div class="row">
+          <div class="row" v-if="isrecharge">
             <div class="operation-title" @click="showPay(row)">充值</div>
           </div>
         </div>
@@ -38,18 +38,23 @@
       <q-td style="text-align:center;" slot="body-cell-allowance" slot-scope="{ row }">
         <div class="operation">
           <div>￥{{ row.allowance }}</div>
-          <div class="row">
+          <div class="row" v-if="isrecharge">
             <div style="margin-left:20px" @click="showSubsidy(row)" class="operation-title">补贴</div>
           </div>
         </div>
       </q-td>
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
-          <div class="operation-title" @click="showRechargeRecord(row)">充值记录</div>
-          <div class="operation-title" @click="showExpense(row)">消费记录</div>
-          <div class="operation-title" @click="showEdit(row)">编辑</div>
-          <div class="operation-title" v-if="row.state == 2" @click="changeState(row, 1)">启用</div>
-          <div class="operation-title" style="color:#ea5e5e" v-if="row.state == 1" @click="changeState(row, 2)">
+          <div class="operation-title" v-if="isrecharge" @click="showRechargeRecord(row)">充值记录</div>
+          <div class="operation-title" v-if="isrecharge" @click="showExpense(row)">消费记录</div>
+          <div class="operation-title" v-if="isbase" @click="showEdit(row)">编辑</div>
+          <div class="operation-title" v-if="row.state == 2 && isbase" @click="changeState(row, 1)">启用</div>
+          <div
+            class="operation-title"
+            style="color:#ea5e5e"
+            v-if="row.state == 1 && isbase"
+            @click="changeState(row, 2)"
+          >
             禁用
           </div>
         </div>
@@ -200,10 +205,21 @@ export default {
         rechargeRecord: false,
         expense: false,
       },
+      isrecharge: false,
+      isbase: false,
     };
   },
 
   async mounted() {
+    let sroles = JSON.parse(localStorage.user).roleList;
+    let index1 = sroles.findIndex((v) => v.id == 3);
+    if (index1 > -1) {
+      this.isrecharge = true;
+    }
+    let index2 = sroles.findIndex((v) => v.id == 2);
+    if (index2 > -1) {
+      this.isbase = true;
+    }
     this.refresh();
   },
 

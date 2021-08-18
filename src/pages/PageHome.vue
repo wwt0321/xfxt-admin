@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <div class="body">
+    <div class="body" v-if="isrecharge">
       <div class="card">
         <div class="card-top row">
           <div class="card-top-title">
@@ -228,6 +228,7 @@ export default {
         consumeSum: 0,
       },
       loading: 0,
+      isrecharge: false,
     };
   },
   created() {
@@ -235,6 +236,10 @@ export default {
     this.getHeight();
   },
   async mounted() {
+    let index = JSON.parse(localStorage.user).roleList.findIndex((v) => v.id == 3);
+    if (index > -1) {
+      this.isrecharge = true;
+    }
     this.timeChange(1);
     const users = await http.get('/user/get?limit=9999&page=1&state=1');
     users.data.list.forEach((v) => {

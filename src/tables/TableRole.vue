@@ -18,15 +18,20 @@
       <q-td slot="body-cell-impose" slot-scope="{ row }">
         <div class="operation">
           <div>每日上限：￥{{ row.max || 0 }}；单次限额：￥{{ row.limit || 0 }}</div>
-          <div style="margin-left:55px;" class="operation-title" @click="showAstrict(row)">设置</div>
+          <div style="margin-left:55px;" class="operation-title" v-if="isbase" @click="showAstrict(row)">设置</div>
         </div>
       </q-td>
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
-          <div class="operation-title" @click="showSubsidies(row)">补贴发放</div>
-          <div style="margin:0 25px" class="operation-title" @click="showEdit(row)">编辑</div>
-          <div class="operation-title" v-if="row.state == 2" @click="changeState(row, 1)">启用</div>
-          <div class="operation-title" style="color:#ea5e5e" v-if="row.state == 1" @click="changeState(row, 2)">
+          <div class="operation-title" v-if="isrecharge" @click="showSubsidies(row)">补贴发放</div>
+          <div style="margin:0 25px" class="operation-title" v-if="isbase" @click="showEdit(row)">编辑</div>
+          <div class="operation-title" v-if="row.state == 2 && isbase" @click="changeState(row, 1)">启用</div>
+          <div
+            class="operation-title"
+            style="color:#ea5e5e"
+            v-if="row.state == 1 && isbase"
+            @click="changeState(row, 2)"
+          >
             禁用
           </div>
         </div>
@@ -122,10 +127,21 @@ export default {
         astrict: false,
         subsidies: false,
       },
+      isrecharge: false,
+      isbase: false,
     };
   },
 
   async mounted() {
+    let sroles = JSON.parse(localStorage.user).roleList;
+    let index1 = sroles.findIndex((v) => v.id == 3);
+    if (index1 > -1) {
+      this.isrecharge = true;
+    }
+    let index2 = sroles.findIndex((v) => v.id == 2);
+    if (index2 > -1) {
+      this.isbase = true;
+    }
     this.refresh();
   },
 

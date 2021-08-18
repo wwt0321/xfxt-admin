@@ -45,7 +45,7 @@
             clickable
             v-for="(v, index) in functions"
             :to="v.route"
-            :key="v.id"
+            :key="index"
             @click="change(index)"
           >
             <q-icon class="layout-icon" size="xs" :name="v.icon" :color="index == click ? 'primary' : 'white'" />
@@ -100,79 +100,79 @@ export default {
     this.date = date.formatDate(new Date(), 'YYYY年M月D日 dddd');
 
     //const { functions } = await this.grequest('functions');
-    this.functions = JSON.parse(localStorage.user).modules;
-    this.functions = [
-      {
-        id: 10100,
-        name: '首页',
-        icon: 'https',
-        route: '/home',
-        parentId: '10000',
-      },
-      {
-        id: 10200,
-        name: '用户管理',
-        icon: 'https',
-        route: '/person',
-        parentId: '10000',
-      },
-      {
-        id: 10300,
-        name: '角色管理',
-        icon: 'https',
-        route: '/role',
-        parentId: '10000',
-      },
-      {
-        id: 10400,
-        name: '商户管理',
-        icon: 'https',
-        route: '/shop',
-        parentId: '10000',
-      },
-      {
-        id: 10500,
-        name: '补贴方案设置',
-        icon: 'https',
-        route: '/subsidy',
-        parentId: '10000',
-      },
-      {
-        id: 10600,
-        name: '补贴记录',
-        icon: 'https',
-        route: '/record',
-        parentId: '10000',
-      },
-      {
-        id: 10700,
-        name: '统计报表',
-        icon: 'https',
-        route: '/statistical',
-        parentId: '10000',
-      },
-      {
-        id: 20100,
-        name: '菜单管理',
-        icon: 'https',
-        route: '/function',
-        parentId: '10000',
-      },
-      {
-        id: 20200,
-        name: '账号管理',
-        icon: 'https',
-        route: '/admin',
-        parentId: '10000',
-      },
-      {
-        id: 20300,
-        name: '权限管理',
-        icon: 'https',
-        route: '/authority',
-        parentId: '10000',
-      },
-    ];
+    this.functions = JSON.parse(localStorage.user).functionList;
+    //this.functions = [
+    //  {
+    //    id: 10100,
+    //    name: '首页',
+    //    icon: 'https',
+    //    route: '/home',
+    //    parentId: '10000',
+    //  },
+    //  {
+    //    id: 10200,
+    //    name: '用户管理',
+    //    icon: 'https',
+    //    route: '/person',
+    //    parentId: '10000',
+    //  },
+    //  {
+    //    id: 10300,
+    //    name: '角色管理',
+    //    icon: 'https',
+    //    route: '/role',
+    //    parentId: '10000',
+    //  },
+    //  {
+    //    id: 10400,
+    //    name: '商户管理',
+    //    icon: 'https',
+    //    route: '/shop',
+    //    parentId: '10000',
+    //  },
+    //  {
+    //    id: 10500,
+    //    name: '补贴方案设置',
+    //    icon: 'https',
+    //    route: '/subsidy',
+    //    parentId: '10000',
+    //  },
+    //  {
+    //    id: 10600,
+    //    name: '补贴记录',
+    //    icon: 'https',
+    //    route: '/record',
+    //    parentId: '10000',
+    //  },
+    //  {
+    //    id: 10700,
+    //    name: '统计报表',
+    //    icon: 'https',
+    //    route: '/statistical',
+    //    parentId: '10000',
+    //  },
+    //  {
+    //    id: 20100,
+    //    name: '菜单管理',
+    //    icon: 'https',
+    //    route: '/function',
+    //    parentId: '10000',
+    //  },
+    //  {
+    //    id: 20200,
+    //    name: '账号管理',
+    //    icon: 'https',
+    //    route: '/admin',
+    //    parentId: '10000',
+    //  },
+    //  {
+    //    id: 20300,
+    //    name: '权限管理',
+    //    icon: 'https',
+    //    route: '/authority',
+    //    parentId: '10000',
+    //  },
+    //];
     this.click = this.functions.findIndex((v) => v.route == this.$route.path);
 
     this.user = JSON.parse(localStorage.user);

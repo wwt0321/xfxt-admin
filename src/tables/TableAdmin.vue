@@ -98,6 +98,11 @@ export default {
         });
       }
       const users = await http.get(url);
+      users.data.list.forEach((v) => {
+        v.roles = v.roles || [];
+        v.roleIds = v.roles.map((r) => r.id).join(',');
+        v.roleNames = v.roles.map((r) => r.name).join('，');
+      });
       this.rows = users.data.list;
       this.pagination.rowsNumber = users.data.num;
     },
