@@ -173,8 +173,13 @@ export default {
     //    parentId: '10000',
     //  },
     //];
-    this.click = this.functions.findIndex((v) => v.route == this.$route.path);
-
+    const index = this.functions.findIndex((v) => v.route == this.$route.path);
+    if (index == -1) {
+      this.click = 0;
+      this.$router.replace(this.functions[0].route);
+    } else {
+      this.click = index;
+    }
     this.user = JSON.parse(localStorage.user);
 
     //const data = await this.grequest('dicts');

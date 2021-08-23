@@ -1,6 +1,6 @@
 <template>
   <div class="app q-pa-lg" :style="conheight">
-    <div class="top">
+    <div class="top" v-if="isstatistics">
       <div class="card-top row">
         <div class="card-top-title">
           信息总览
@@ -229,6 +229,7 @@ export default {
       },
       loading: 0,
       isrecharge: false,
+      isstatistics: false,
     };
   },
   created() {
@@ -239,20 +240,24 @@ export default {
     let index = JSON.parse(localStorage.user).roleList.findIndex((v) => v.id == 3);
     if (index > -1) {
       this.isrecharge = true;
+      const users = await http.get('/user/get?limit=9999&page=1&state=1');
+      users.data.list.forEach((v) => {
+        v.value = v.id;
+        v.label = v.name;
+      });
+      this.users = users.data.list;
+      const roles = await http.get(`/role/get?limit=${999}&page=${1}&state=${1}`);
+      roles.data.list.forEach((v) => {
+        v.value = v.id;
+        v.label = v.name;
+      });
+      this.roles = roles.data.list;
     }
-    this.timeChange(1);
-    const users = await http.get('/user/get?limit=9999&page=1&state=1');
-    users.data.list.forEach((v) => {
-      v.value = v.id;
-      v.label = v.name;
-    });
-    this.users = users.data.list;
-    const roles = await http.get(`/role/get?limit=${999}&page=${1}&state=${1}`);
-    roles.data.list.forEach((v) => {
-      v.value = v.id;
-      v.label = v.name;
-    });
-    this.roles = roles.data.list;
+    let index2 = JSON.parse(localStorage.user).roleList.findIndex((v) => v.id == 4);
+    if (index2 > -1) {
+      this.isstatistics = true;
+      this.timeChange(1);
+    }
   },
   methods: {
     getHeight() {

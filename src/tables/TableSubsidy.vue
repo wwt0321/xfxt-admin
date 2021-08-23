@@ -110,6 +110,7 @@ export default {
     },
     showEdit(row) {
       this.isShow.edit = true;
+      this.primaryId = row.id;
       this.selected[0] = row;
     },
     async send(row) {

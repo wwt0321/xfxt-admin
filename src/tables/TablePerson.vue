@@ -15,17 +15,17 @@
       separator="cell"
       flat
     >
-      <q-td style="text-align:center;" slot="body-cell-card" slot-scope="{ row }">
-        <div v-if="row.card" class="operation">
-          <div>{{ row.card }}</div>
-          <div class="row">
+      <q-td style="text-align:center;" slot="body-cell-cardNo" slot-scope="{ row }">
+        <div v-if="row.cardNo" class="operation">
+          <div>{{ row.cardNo }}</div>
+          <!--<div class="row" v-if="isrecharge">
             <div class="operation-title">更换</div>
             <div style="margin-left:20px;color:#ea5e5e" class="operation-title">解绑</div>
-          </div>
+          </div>-->
         </div>
-        <div v-else>
-          <div class="operation-title" @click="showBinding(row.id)">+绑定卡号</div>
-        </div>
+        <!--<div v-else>
+          <div v-if="isrecharge" class="operation-title" @click="showBinding(row.id)">+绑定卡号</div>
+        </div>-->
       </q-td>
       <q-td style="text-align:center;" slot="body-cell-balance" slot-scope="{ row }">
         <div class="operation">
@@ -45,8 +45,8 @@
       </q-td>
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
-          <div class="operation-title" v-if="isrecharge" @click="showRechargeRecord(row)">充值记录</div>
-          <div class="operation-title" v-if="isrecharge" @click="showExpense(row)">消费记录</div>
+          <div class="operation-title" v-if="isrecharge || isstatistics" @click="showRechargeRecord(row)">充值记录</div>
+          <div class="operation-title" v-if="isstatistics" @click="showExpense(row)">消费记录</div>
           <div class="operation-title" v-if="isbase" @click="showEdit(row)">编辑</div>
           <div class="operation-title" v-if="row.state == 2 && isbase" @click="changeState(row, 1)">启用</div>
           <div
@@ -207,6 +207,7 @@ export default {
       },
       isrecharge: false,
       isbase: false,
+      isstatistics: false,
     };
   },
 
@@ -219,6 +220,10 @@ export default {
     let index2 = sroles.findIndex((v) => v.id == 2);
     if (index2 > -1) {
       this.isbase = true;
+    }
+    let index3 = JSON.parse(localStorage.user).roleList.findIndex((v) => v.id == 4);
+    if (index3 > -1) {
+      this.isstatistics = true;
     }
     this.refresh();
   },
