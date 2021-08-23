@@ -17,7 +17,7 @@
     >
       <q-td slot="body-cell-operation" slot-scope="{ row }">
         <div class="operation">
-          <div class="operation-title" @click="showEdit(row)">编辑</div>
+          <div class="operation-title" v-if="row.id != 1" @click="showEdit(row)">编辑</div>
           <div class="operation-title" v-if="row.id != 1" :loading="loading > 0" @click="resetPassword(row)">
             重置密码
           </div>
@@ -66,7 +66,7 @@ export default {
       // 表格列设置
       columns: [
         { name: 'id', label: '序号', field: 'id', align: 'center' },
-        { name: 'name', label: '姓名', field: 'name', align: 'center' },
+        { name: 'name', label: '账号', field: 'name', align: 'center' },
         { name: 'roleNames', label: '角色', field: 'roleNames', align: 'center' },
         { name: 'operation', label: '操作', field: 'operation', align: 'center' },
       ],
