@@ -293,7 +293,7 @@ export default {
     async goRecharge() {
       this.loading++;
       let params = new FormData();
-      params.append('amount', this.amount1);
+      params.append('amount', parseFloat(this.amount1).toFixed(2));
       params.append('workNo', this.user.workNo);
       params.append('name', this.user.name);
       params.append('type', parseInt(this.shape));
@@ -309,7 +309,7 @@ export default {
     async goSubsidy() {
       this.loading++;
       let params = new FormData();
-      params.append('amount', this.amount2);
+      params.append('amount', parseFloat(this.amount2).toFixed(2));
       params.append('workNo', this.user2.workNo);
       params.append('username', this.user2.name);
       const res = await http.post('/distribute/user', params);
@@ -324,7 +324,7 @@ export default {
     async goRole() {
       this.loading++;
       let params = new FormData();
-      params.append('amount', this.amount3);
+      params.append('amount', parseFloat(this.amount3).toFixed(2));
       params.append('roleId', this.role.id);
       params.append('roleName', this.role.name);
       const res = await http.post('/distribute/role', params);

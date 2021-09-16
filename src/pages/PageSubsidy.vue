@@ -113,7 +113,7 @@ export default {
       this.loading++;
       let ids = this.allowances.map((v) => v.id);
       let roleNames = this.allowances.map((v) => v.name);
-      let allowances = this.allowances.map((v) => v.allowance || 0);
+      let allowances = this.allowances.map((v) => parseFloat(v.allowance).toFixed(2) || 0);
       let edata = {};
       edata.ids = ids.join(',');
       edata.roleNames = roleNames.join(',');

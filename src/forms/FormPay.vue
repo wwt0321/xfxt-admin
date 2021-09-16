@@ -79,7 +79,7 @@ export default {
     async goSubmit() {
       this.loading++;
       let params = new FormData();
-      params.append('amount', this.amount);
+      params.append('amount', parseFloat(this.amount).toFixed(2));
       params.append('workNo', this.edata.workNo);
       params.append('name', this.edata.name);
       params.append('type', parseInt(this.shape));

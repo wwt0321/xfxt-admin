@@ -69,7 +69,7 @@ export default {
     async goSubmit() {
       this.loading++;
       let params = new FormData();
-      params.append('amount', this.amount);
+      params.append('amount', parseFloat(this.amount).toFixed(2));
       params.append('roleId', this.edata.id);
       params.append('roleName', this.edata.name);
       const res = await http.post('/distribute/role', params);

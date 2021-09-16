@@ -1,8 +1,10 @@
+import { Platform } from 'quasar';
 // GraphQL 接口地址
 export const endpoint = '/postgraphiles/admin/graphql';
 
 // swagger 接口地址
-export const gateway = '/console';
+export const gateway =
+  Platform.is.electron && process.env.NODE_ENV != 'development' ? 'https://xfxt.test.nbyunyi.cn/console' : '/console';
 
 // JWT 存在 localStorage[tokenKey] 中，一个系统有多个客户端时，通过不同的命名确保可以同时登录多个系统而不冲突
 export const tokenKey = 'jwtAdmin';

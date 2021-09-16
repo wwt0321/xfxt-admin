@@ -77,6 +77,28 @@
     <!--人员统计-->
     <div v-show="persons" class="body" :style="bodyheight">
       <div class="all-top row">
+        <q-tabs v-model="tab5" align="left" active-color="secondary">
+          <q-tab class="all-tab" name="tab1" label="今天" @click="timeChange3(1)" />
+          <q-tab class="all-tab" name="tab2" label="昨天" @click="timeChange3(2)" />
+          <q-tab class="all-tab" name="tab3" label="近7日" @click="timeChange3(3)" />
+          <q-tab class="all-tab" name="tab4" label="近30日" @click="timeChange3(4)" />
+          <q-tab class="all-tab" name="tab5" label="今年" @click="timeChange3(5)" />
+        </q-tabs>
+        <q-space></q-space>
+        <q-input style="width:180px" type="date" outlined dense stack-label v-model="timeStart3" clearable></q-input>
+        <div class="all-top-line">-</div>
+        <q-input
+          style="width:180px;margin-right:20px"
+          type="date"
+          outlined
+          dense
+          stack-label
+          v-model="timeEnd3"
+          clearable
+        ></q-input>
+        <q-btn class="top-filter-btn" color="secondary" label="查询" @click="timeChange3(6)"></q-btn>
+      </div>
+      <div class="all-top row">
         <q-tabs v-model="tab3" align="left" active-color="secondary">
           <q-tab class="all-tab" name="tab1" label="现金充值" />
           <q-tab class="all-tab" name="tab2" label="补贴" />
@@ -84,9 +106,9 @@
         </q-tabs>
       </div>
       <div style="padding:20px">
-        <table-statistical-person-pay ref="table31" v-show="tab3 == 'tab1'" />
-        <table-statistical-person-subsidy ref="table32" v-show="tab3 == 'tab2'" />
-        <table-statistical-consumption ref="table33" v-show="tab3 == 'tab3'" />
+        <table-statistical-person-pay ref="table31" v-show="tab3 == 'tab1'" :search="filters3" />
+        <table-statistical-person-subsidy ref="table32" v-show="tab3 == 'tab2'" :search="filters3" />
+        <table-statistical-consumption ref="table33" v-show="tab3 == 'tab3'" :search="filters3" />
       </div>
     </div>
     <!--门店统计-->
@@ -151,6 +173,7 @@ export default {
       tab2: 'tab1',
       tab3: 'tab1',
       tab4: 'tab1',
+      tab5: 'tab1',
       //顶部的切换
       all: true,
       persons: false,
@@ -164,6 +187,9 @@ export default {
       filters2: {},
       timeStart2: '',
       timeEnd2: '',
+      filters3: {},
+      timeStart3: '',
+      timeEnd3: '',
       total: {
         allowanceSum: 0,
         rechargeSum: 0,
@@ -178,6 +204,7 @@ export default {
   mounted() {
     this.timeChange(1);
     this.timeChange2(1);
+    this.timeChange3(1);
   },
   methods: {
     getHeight() {
@@ -277,6 +304,46 @@ export default {
       }
       setTimeout(() => {
         this.$refs.tableshop.refresh();
+      });
+    },
+    async timeChange3(type) {
+      let today = date.formatDate(new Date(), 'YYYY-MM-DD'),
+        oneday = 1000 * 60 * 60 * 24;
+      today = Date.parse(today);
+      if (type == 1) {
+        this.filters3.startTime = today;
+        this.filters3.endTime = today + oneday;
+      } else if (type == 2) {
+        this.filters3.startTime = today - oneday;
+        this.filters3.endTime = today;
+      } else if (type == 3) {
+        this.filters3.startTime = today - 6 * oneday;
+        this.filters3.endTime = today + oneday;
+      } else if (type == 4) {
+        this.filters3.startTime = today - 29 * oneday;
+        this.filters3.endTime = today + oneday;
+      } else if (type == 5) {
+        this.filters3.startTime = Date.parse(new Date(new Date().getFullYear + '-01-01'));
+        this.filters3.endTime = today + oneday;
+      } else if (type == 6) {
+        if (!this.timeStart3) {
+          return alert('请选择开始时间');
+        }
+        if (!this.timeEnd3) {
+          return alert('请选择结束时间');
+        }
+        this.filters3.startTime = Date.parse(new Date(this.timeStart3));
+        this.filters3.endTime = Date.parse(new Date(this.timeEnd3)) + oneday;
+        this.tab5 = '';
+      }
+      if (type != 6) {
+        this.timeStart3 = '';
+        this.timeEnd3 = '';
+      }
+      setTimeout(() => {
+        this.$refs.table31.refresh();
+        this.$refs.table32.refresh();
+        this.$refs.table33.refresh();
       });
     },
   },

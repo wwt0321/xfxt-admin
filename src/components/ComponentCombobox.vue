@@ -35,7 +35,8 @@ export default {
           return;
         }
 
-        const filterFn = (v) => v.label.indexOf(val) >= 0;
+        const filterFn = (v) =>
+          v.label ? v.label.indexOf(val) >= 0 : v.name ? v.name.indexOf(val) >= 0 : v.indexOf(val) >= 0;
 
         this.filteredOptions = options.filter(filterFn);
       });

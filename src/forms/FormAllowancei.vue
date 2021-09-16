@@ -104,7 +104,7 @@ export default {
       }
       this.edata.ids = roles.map((v) => v.value).join(',');
       this.edata.roleNames = roles.map((v) => v.label).join(',');
-      this.edata.allowances = roles.map((v) => v.allowance || 0).join(',');
+      this.edata.allowances = roles.map((v) => parseFloat(v.allowance).toFixed(2) || 0).join(',');
       this.gql.update += `/${this.edata.id}`;
       this.submit('');
     },
