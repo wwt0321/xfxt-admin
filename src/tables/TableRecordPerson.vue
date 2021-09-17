@@ -159,7 +159,7 @@ export default {
     },
     async refund(row) {
       if (row.state == 1) {
-        let result = confirm(`确认对“${row.name}”进行退补?`);
+        let result = await this.confirm(`确认对“${row.name}”进行退补?`);
         if (result) {
           this.loading++;
           let params = new FormData();
@@ -167,16 +167,16 @@ export default {
           const res = await http.put('/distribute/refundByUser', params);
           if (res.res) {
             this.refresh();
-            alert('退补成功');
+            this.alert('退补成功');
           } else {
-            alert('退补失败');
+            this.alert('退补失败');
           }
           this.loading--;
         }
       }
     },
     async regrant(row) {
-      let result = confirm(`确认对“${row.name}”进行重新补贴?`);
+      let result = await this.confirm(`确认对“${row.name}”进行重新补贴?`);
       if (result) {
         this.loading++;
         let params = new FormData();
@@ -186,9 +186,9 @@ export default {
         const res = await http.post('/distribute/user', params);
         if (res.res) {
           this.refresh();
-          alert('重新补贴成功');
+          this.alert('重新补贴成功');
         } else {
-          alert('重新补贴失败');
+          this.alert('重新补贴失败');
         }
         this.loading--;
       }

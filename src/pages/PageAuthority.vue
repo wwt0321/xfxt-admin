@@ -42,8 +42,10 @@
   </div>
 </template>
 <script>
+import { MixinCommon } from '../mixins/MixinCommon';
 import { http } from '../utils/luch-request/index.js';
 export default {
+  mixins: [MixinCommon],
   data() {
     return {
       edata: {},
@@ -203,7 +205,7 @@ export default {
         }
       });
       this.loading--;
-      alert('保存成功');
+      await this.alert('保存成功');
       this.goFunction();
     },
   },

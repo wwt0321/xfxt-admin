@@ -174,7 +174,7 @@ export default {
       this.refresh();
     },
     async del({ id, name }) {
-      const isConfirm = confirm(`确认删除“${name}”？`);
+      const isConfirm = await this.confirm(`确认删除“${name}”？`);
       if (!isConfirm) {
         return;
       }
@@ -184,9 +184,9 @@ export default {
       console.log(res);
       if (res.res) {
         this.refresh();
-        alert('删除成功');
+        this.alert('删除成功');
       } else {
-        alert('删除失败');
+        this.alert('删除失败');
       }
       this.loading--;
     },

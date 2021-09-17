@@ -117,7 +117,7 @@ export default {
       this.refresh();
     },
     async resetPassword({ id, name }) {
-      const isConfirm = confirm(`确认重置${name}的密码？`);
+      const isConfirm = await this.confirm(`确认重置${name}的密码？`);
       if (!isConfirm) {
         return;
       }
@@ -126,14 +126,14 @@ export default {
       const res = await http.put(`/system/updatePwd?id=${id}&pwd=123456`);
       console.log(res);
       if (res.res) {
-        alert('重置成功');
+        this.alert('重置成功');
       } else {
-        alert('重置失败');
+        this.alert('重置失败');
       }
       this.loading--;
     },
     async del({ id, name }) {
-      const isConfirm = confirm(`确认删除${name}？`);
+      const isConfirm = await this.confirm(`确认删除${name}？`);
       if (!isConfirm) {
         return;
       }
@@ -143,9 +143,9 @@ export default {
       console.log(res);
       if (res.res) {
         this.refresh();
-        alert('删除成功');
+        this.alert('删除成功');
       } else {
-        alert('删除失败');
+        this.alert('删除失败');
       }
       this.loading--;
     },

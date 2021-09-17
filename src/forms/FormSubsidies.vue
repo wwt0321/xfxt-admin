@@ -76,9 +76,9 @@ export default {
       if (res.res) {
         this.$emit('submit', this.edata);
         this.hide();
-        alert('发放补贴成功');
+        this.alert('发放补贴成功');
       } else {
-        alert('发放补贴失败');
+        this.alert('发放补贴失败');
       }
       this.loading--;
     },

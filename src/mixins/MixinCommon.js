@@ -5,6 +5,11 @@ import { date } from 'quasar';
 
 export const MixinCommon = {
   mixins: [MixinRequest, MixinTokenAdmin, MixinUtils],
+  data() {
+    return {
+      cardNo: '',
+    };
+  },
   computed: {
     configs() {
       return this.$store.state.configs;

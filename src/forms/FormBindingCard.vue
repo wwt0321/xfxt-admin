@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <q-form @submit="submit('')">
+    <q-form>
       <div class="row top">
         <div class="dialog-title">绑定卡号</div>
         <q-space />
@@ -12,29 +12,29 @@
           <div class="dialog-main-left">
             <div class="dialog-main row">
               <span class="dialog-main-title">姓名：</span>
-              <div class="dialog-main-title-main">张三</div>
+              <div class="dialog-main-title-main">{{ edata.name }}</div>
             </div>
             <div class="dialog-main row">
               <span class="dialog-main-title">工号：</span>
-              <div class="dialog-main-title-main">00001</div>
+              <div class="dialog-main-title-main">{{ edata.workNo }}</div>
             </div>
             <div class="dialog-main row">
               <span class="dialog-main-title">手机号：</span>
-              <div class="dialog-main-title-main">13528282920</div>
+              <div class="dialog-main-title-main">{{ edata.phoneNum }}</div>
             </div>
           </div>
           <div class="dialog-main-right">
             <div class="dialog-main row">
               <span class="dialog-main-title">卡号：</span>
-              <div class="dialog-main-title-main">1919191919191</div>
+              <div class="dialog-main-title-main">{{ edata.cardNo }}</div>
             </div>
             <div class="dialog-main row">
               <span class="dialog-main-title">现金账户：</span>
-              <div class="dialog-main-title-main">100.00</div>
+              <div class="dialog-main-title-main">{{ edata.balance }}</div>
             </div>
             <div class="dialog-main row">
               <span class="dialog-main-title">补贴账户：</span>
-              <div class="dialog-main-title-main">60.00</div>
+              <div class="dialog-main-title-main">{{ edata.allowance }}</div>
             </div>
           </div>
         </div>
@@ -50,24 +50,38 @@
     </q-form>
     <!-- 添加/编辑用户 -->
     <q-dialog v-model="isShow.edit" no-backdrop-dismiss>
-      <form-read
-        v-if="isShow.edit"
-        :primary-id="primaryId"
-        @hide="hideEdit"
-        @submit="refresh"
-        style="width: 380px;"
-        :locked="locked"
-      ></form-read>
+      <q-card style="width:400px;">
+        <q-form @submit="preSave">
+          <div class="row top">
+            <div class="dialog-title">读卡绑定</div>
+            <q-space />
+            <q-img class="dialog-close" src="../assets/close.svg" @click="isShow.edit = false"></q-img>
+          </div>
+          <q-card-section style="padding:25px 40px">
+            <!-- 表单内容 -->
+            <div class="dialog-main-title" style="text-align:center;">
+              等待读卡中……
+            </div>
+            <div class="dialog-main-card">卡号：{{ cardNo }}</div>
+            <q-btn
+              class="dialog-main-btn"
+              type="primary"
+              :loading="mutating > 0"
+              :disabled="mutating > 0 || !cardNo"
+              label="确定"
+              color="secondary"
+            />
+          </q-card-section>
+        </q-form>
+      </q-card>
     </q-dialog>
   </q-card>
 </template>
 
 <script>
 import { MixinForm } from '../mixins/MixinForm';
-import FormRead from 'src/forms/FormRead.vue';
 export default {
-  components: { FormRead },
-  name: 'FormPay',
+  name: 'FormBindingCard',
   mixins: [MixinForm],
   props: ['selected', 'type'],
   data() {
@@ -75,9 +89,9 @@ export default {
       mutating: 0,
 
       gql: {
-        create: 'eventType.create',
-        update: 'eventType.update',
-        query: 'eventType',
+        create: '',
+        update: '',
+        query: '',
       },
 
       edata: {},
@@ -90,15 +104,27 @@ export default {
   },
 
   async mounted() {
-    /*
-    if (this.primaryId) {
-      const { eventTypes } = await this.grequest('eventTypes', { condition: { id: this.primaryId } });
-      this.edata = eventTypes.nodes[0];
-      delete this.edata.eventCategory;
-    }*/
+    this.cardNo = '';
+    this.edata = this.selected[0] ? { ...this.selected[0] } : {};
   },
   methods: {
-    preSave() {},
+    async preSave() {
+      this.mutating++;
+      let params = new FormData();
+      params.append('id', this.edata.id);
+      params.append('cardNo', this.cardNo);
+      let res = await http.put(`/user/update`, params);
+      if (res.res) {
+        this.cardNo = '';
+        this.isShow.edit = false;
+        this.$emit('submit', this.edata);
+        this.hide();
+        this.alert(`${this.edata.cardNo ? '换绑' : '绑定'}成功`);
+      } else {
+        this.alert(`${this.edata.cardNo ? '换绑' : '绑定'}失败`);
+      }
+      this.mutating--;
+    },
   },
 };
 </script>

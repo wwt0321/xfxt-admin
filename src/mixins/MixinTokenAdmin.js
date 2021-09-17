@@ -61,7 +61,7 @@ const MixinTokenAdmin = {
         this.$router.replace(localStorage.to && localStorage.to != '/' ? localStorage.to : '/home');
         return true;
       } else {
-        alert(data.msg);
+        await alert(data.msg);
         return false;
       }
     },

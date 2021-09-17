@@ -192,9 +192,11 @@
   </div>
 </template>
 <script>
+import { MixinCommon } from '../mixins/MixinCommon';
 import { http } from '../utils/luch-request/index.js';
 import { date } from 'quasar';
 export default {
+  mixins: [MixinCommon],
   name: 'PageHome',
   data() {
     return {
@@ -300,9 +302,9 @@ export default {
       const res = await http.post('/account/recharge', params);
       if (res.res) {
         this.timeChange(1);
-        alert(this.shape == 1 ? '充值成功' : '提现成功');
+        this.alert(this.shape == 1 ? '充值成功' : '提现成功');
       } else {
-        alert(this.shape == 1 ? '充值失败' : '提现失败');
+        this.alert(this.shape == 1 ? '充值失败' : '提现失败');
       }
       this.loading--;
     },
@@ -315,9 +317,9 @@ export default {
       const res = await http.post('/distribute/user', params);
       if (res.res) {
         this.timeChange(1);
-        alert('发放补贴成功');
+        this.alert('发放补贴成功');
       } else {
-        alert('发放补贴失败');
+        this.alert('发放补贴失败');
       }
       this.loading--;
     },
@@ -330,9 +332,9 @@ export default {
       const res = await http.post('/distribute/role', params);
       if (res.res) {
         this.timeChange(1);
-        alert('发放补贴成功');
+        this.alert('发放补贴成功');
       } else {
-        alert('发放补贴失败');
+        this.alert('发放补贴失败');
       }
       this.loading--;
     },

@@ -142,6 +142,7 @@
   </div>
 </template>
 <script>
+import { MixinCommon } from '../mixins/MixinCommon';
 import TableAll from 'src/tables/TableAll.vue';
 import TableStatisticalPersonSubsidy from 'src/tables/TableStatisticalPersonSubsidy.vue';
 import TableStatisticalConsumption from 'src/tables/TableStatisticalConsumption.vue';
@@ -151,6 +152,7 @@ import { date } from 'quasar';
 import { http } from '../utils/luch-request/index.js';
 
 export default {
+  mixins: [MixinCommon],
   components: {
     TableAll,
     TableStatisticalPersonSubsidy,
@@ -289,10 +291,10 @@ export default {
         this.filters2.endTime = today + oneday;
       } else if (type == 6) {
         if (!this.timeStart2) {
-          return alert('请选择开始时间');
+          return this.alert('请选择开始时间');
         }
         if (!this.timeEnd2) {
-          return alert('请选择结束时间');
+          return this.alert('请选择结束时间');
         }
         this.filters2.startTime = Date.parse(new Date(this.timeStart2));
         this.filters2.endTime = Date.parse(new Date(this.timeEnd2)) + oneday;
@@ -327,10 +329,10 @@ export default {
         this.filters3.endTime = today + oneday;
       } else if (type == 6) {
         if (!this.timeStart3) {
-          return alert('请选择开始时间');
+          return this.alert('请选择开始时间');
         }
         if (!this.timeEnd3) {
-          return alert('请选择结束时间');
+          return this.alert('请选择结束时间');
         }
         this.filters3.startTime = Date.parse(new Date(this.timeStart3));
         this.filters3.endTime = Date.parse(new Date(this.timeEnd3)) + oneday;

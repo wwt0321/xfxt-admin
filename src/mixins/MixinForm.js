@@ -52,9 +52,9 @@ export const MixinForm = {
       if (res.res) {
         this.$emit('submit', this.edata);
         this.hide();
-        alert(this.primaryId ? `${tip || '编辑'}成功` : `${tip || '新建'}成功`);
+        this.alert(this.primaryId ? `${tip || '编辑'}成功` : `${tip || '新建'}成功`);
       } else {
-        alert(this.primaryId ? `${tip || '编辑'}失败` : `${tip || '新建'}失败`);
+        this.alert(this.primaryId ? `${tip || '编辑'}失败` : `${tip || '新建'}失败`);
       }
       this.loading--;
     },

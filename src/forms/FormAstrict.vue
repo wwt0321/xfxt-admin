@@ -90,7 +90,7 @@ export default {
         this.$emit('submit', this.edata);
         this.hide();
       } else {
-        alert('设置失败');
+        this.alert('设置失败');
       }
       this.loading--;
     },

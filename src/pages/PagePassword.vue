@@ -34,9 +34,11 @@
 </template>
 
 <script>
+import { MixinCommon } from '../mixins/MixinCommon';
 import { http } from '../utils/luch-request/index.js';
 export default {
   name: 'PagePassword',
+  mixins: [MixinCommon],
   data() {
     return {
       oldPassword: '',
@@ -52,9 +54,9 @@ export default {
       const res = await http.put(`/system/updatePwd?id=${user.id}&pwd=${this.newPassword}`);
       console.log(res);
       if (res.res) {
-        alert('密码修改成功');
+        this.alert('密码修改成功');
       } else {
-        alert('密码修改失败');
+        this.alert('密码修改失败');
       }
       this.loading--;
     },

@@ -87,9 +87,9 @@ export default {
       if (res.res) {
         this.$emit('submit', this.edata);
         this.hide();
-        alert(this.shape == 1 ? '充值成功' : '提现成功');
+        this.alert(this.shape == 1 ? '充值成功' : '提现成功');
       } else {
-        alert(this.shape == 1 ? '充值失败' : '提现失败');
+        this.alert(this.shape == 1 ? '充值失败' : '提现失败');
       }
       this.loading--;
     },

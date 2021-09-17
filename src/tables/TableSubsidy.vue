@@ -114,32 +114,32 @@ export default {
       this.selected[0] = row;
     },
     async send(row) {
-      let result = confirm(`确认发放“${row.name}”补贴?`);
+      let result = await this.confirm(`确认发放“${row.name}”补贴?`);
       if (result) {
         this.loading++;
         let params = new FormData();
         params.append('id', row.id);
         let res = await http.post('/distribute/planID', params);
         if (res.res) {
-          alert('发放补贴成功');
+          this.alert('发放补贴成功');
         } else {
-          alert('发放补贴失败');
+          this.alert('发放补贴失败');
         }
         this.loading--;
       }
     },
     async goDel(row) {
-      let result = confirm(`确认删除“${row.name}”?`);
+      let result = await this.confirm(`确认删除“${row.name}”?`);
       if (result) {
         this.loading++;
         let params = new FormData();
         params.append('id', row.id);
         let res = await http.delete(`/plan/delete/${row.id}`, params);
         if (res.res) {
-          alert('删除成功');
+          this.alert('删除成功');
           this.refresh();
         } else {
-          alert('删除失败');
+          this.alert('删除失败');
         }
         this.loading--;
       }
