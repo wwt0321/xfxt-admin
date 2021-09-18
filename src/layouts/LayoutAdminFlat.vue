@@ -100,16 +100,11 @@ export default {
         return this.alert('读卡器程序启动失败，请联系管理员');
       }
       const that = this;
-      let cmdStr = 'card.jar';
       const childProcess = require('child_process');
 
-      let workerProcess = childProcess.spawn(
-        'start javaw -jar -server -Xms3550m -Xmx3550m -XX:CompressedClassSpaceSize=128m -XX:MetaspaceSize=200m -XX:MaxMetaspaceSize=200m  ' +
-          cmdStr,
-        {
-          shell: true,
-        },
-      );
+      let workerProcess = childProcess.spawn('card.jar', {
+        shell: true,
+      });
 
       // 打印正常的后台可执行程序输出
       workerProcess.stdout.on('data', function(data) {
@@ -127,6 +122,14 @@ export default {
       workerProcess.on('close', function(code) {
         console.log('out code：' + code);
         that.recharge();
+      });
+      process.on('exit', function() {
+        console.log('process is about to exit');
+        workerProcess.kill();
+      });
+      process.on('kill', function() {
+        console.log('process is about to kill');
+        workerProcess.kill();
       });
     },
   },
