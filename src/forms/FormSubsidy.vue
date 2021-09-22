@@ -72,16 +72,16 @@ export default {
     async goSubmit() {
       this.loading++;
       let params = new FormData();
-      params.append('amount', this.amount);
+      params.append('amount', parseFloat(this.amount).toFixed(2));
       params.append('workNo', this.edata.workNo);
       params.append('username', this.edata.name);
       const res = await http.post('/distribute/user', params);
       if (res.res) {
         this.$emit('submit', this.edata);
         this.hide();
-        alert('发放补贴成功');
+        this.alert('发放补贴成功');
       } else {
-        alert('发放补贴失败');
+        this.alert('发放补贴失败');
       }
       this.loading--;
     },

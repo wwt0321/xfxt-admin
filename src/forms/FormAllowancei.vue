@@ -100,11 +100,11 @@ export default {
         }
       });
       if (sum === 0) {
-        return alert('至少得有一个角色补贴金额大于0');
+        return this.alert('至少得有一个角色补贴金额大于0');
       }
       this.edata.ids = roles.map((v) => v.value).join(',');
       this.edata.roleNames = roles.map((v) => v.label).join(',');
-      this.edata.allowances = roles.map((v) => v.allowance || 0).join(',');
+      this.edata.allowances = roles.map((v) => parseFloat(v.allowance).toFixed(2) || 0).join(',');
       this.gql.update += `/${this.edata.id}`;
       this.submit('');
     },

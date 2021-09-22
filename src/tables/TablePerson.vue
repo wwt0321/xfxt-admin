@@ -18,14 +18,14 @@
       <q-td style="text-align:center;" slot="body-cell-cardNo" slot-scope="{ row }">
         <div v-if="row.cardNo" class="operation">
           <div>{{ row.cardNo }}</div>
-          <!--<div class="row" v-if="isrecharge">
-            <div class="operation-title">更换</div>
-            <div style="margin-left:20px;color:#ea5e5e" class="operation-title">解绑</div>
-          </div>-->
+          <div class="row" v-if="isrecharge">
+            <div class="operation-title" @click="showBinding(row)">更换</div>
+            <div style="margin-left:20px;color:#ea5e5e" class="operation-title" @click="relieve(row)">解绑</div>
+          </div>
         </div>
-        <!--<div v-else>
-          <div v-if="isrecharge" class="operation-title" @click="showBinding(row.id)">+绑定卡号</div>
-        </div>-->
+        <div v-else>
+          <div v-if="isrecharge" class="operation-title" @click="showBinding(row)">+绑定卡号</div>
+        </div>
       </q-td>
       <q-td style="text-align:center;" slot="body-cell-balance" slot-scope="{ row }">
         <div class="operation">
@@ -186,7 +186,7 @@ export default {
           align: 'center',
           format: (v) => (v == 1 ? '已启用' : '已禁用'),
         },
-        { name: 'cardNo', label: '绑定卡号', field: 'cardNo', align: 'center' },
+        { name: 'cardNo', label: '一卡通卡号', field: 'cardNo', align: 'center' },
         { name: 'balance', label: '余额', field: 'balance', align: 'center' },
         { name: 'allowance', label: '补贴', field: 'allowance', align: 'center' },
         { name: 'operation', label: '操作', field: 'operation', align: 'center' },
@@ -259,9 +259,10 @@ export default {
     hideSubsidy() {
       this.isShow.subsidy = false;
     },
-    showBinding(id) {
+    showBinding(row) {
       this.isShow.binding = true;
-      this.primaryId = id;
+      this.primaryId = row.id;
+      this.selected = [row];
     },
     hideBinding() {
       this.isShow.binding = false;
@@ -299,11 +300,26 @@ export default {
       params.append('state', state);
       let res = await http.put(`/user/updateState/${row.id}`, params);
       if (res.res) {
-        alert(`${state == 1 ? '启用' : '禁用'}成功`);
+        this.alert(`${state == 1 ? '启用' : '禁用'}成功`);
       } else {
-        alert(`${state == 1 ? '启用' : '禁用'}失败`);
+        this.alert(`${state == 1 ? '启用' : '禁用'}失败`);
       }
       this.refresh();
+    },
+    async relieve(row) {
+      const ent = await this.confirm('确认解绑？');
+      if (ent) {
+        let params = new FormData();
+        params.append('id', row.id);
+        params.append('cardNo', '');
+        let res = await http.put(`/user/update`, params);
+        if (res.res) {
+          this.alert(`解绑成功`);
+          this.refresh();
+        } else {
+          this.alert(`解绑失败`);
+        }
+      }
     },
   },
 };

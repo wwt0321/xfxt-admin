@@ -34,11 +34,13 @@
   </div>
 </template>
 <script>
+import { MixinCommon } from '../mixins/MixinCommon';
 import TableSubsidy from 'src/tables/TableSubsidy.vue';
 import FormScheme from 'src/forms/FormScheme.vue';
 import { http } from '../utils/luch-request/index.js';
 export default {
   components: { TableSubsidy, FormScheme },
+  mixins: [MixinCommon],
   name: 'PageSubsidy',
   data() {
     return {
@@ -87,12 +89,12 @@ export default {
       let sum = 0;
       for (let i = 0; i < this.allowances.length; i++) {
         if (this.allowances[i].allowance < 0) {
-          return alert('补贴金额不能小于0');
+          return this.alert('补贴金额不能小于0');
         }
         sum += parseFloat(this.allowances[i].allowance);
       }
       if (sum === 0) {
-        return alert('至少得有一个角色补贴金额大于0');
+        return this.alert('至少得有一个角色补贴金额大于0');
       }
       this.isShow.scheme = true;
     },
@@ -103,17 +105,17 @@ export default {
       let sum = 0;
       for (let i = 0; i < this.allowances.length; i++) {
         if (this.allowances[i].allowance < 0) {
-          return alert('补贴金额不能小于0');
+          return this.alert('补贴金额不能小于0');
         }
         sum += parseFloat(this.allowances[i].allowance);
       }
       if (sum === 0) {
-        return alert('至少得有一个角色补贴金额大于0');
+        return this.alert('至少得有一个角色补贴金额大于0');
       }
       this.loading++;
       let ids = this.allowances.map((v) => v.id);
       let roleNames = this.allowances.map((v) => v.name);
-      let allowances = this.allowances.map((v) => v.allowance || 0);
+      let allowances = this.allowances.map((v) => parseFloat(v.allowance).toFixed(2) || 0);
       let edata = {};
       edata.ids = ids.join(',');
       edata.roleNames = roleNames.join(',');
@@ -125,9 +127,9 @@ export default {
       });
       let res = await http.post('/distribute/plan', params);
       if (res.res) {
-        alert('发放补贴成功');
+        this.alert('发放补贴成功');
       } else {
-        alert('发放补贴失败');
+        this.alert('发放补贴失败');
       }
       this.loading--;
     },

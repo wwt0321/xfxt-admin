@@ -69,7 +69,7 @@ export default {
           this.$emit('submit', this.edata);
           this.hide();
         } else {
-          alert('修改失败');
+          this.alert('修改失败');
         }
         this.loading--;
       } else {

@@ -63,7 +63,6 @@
 
 <script>
 import { date } from 'quasar';
-import { map, prop, fromPairs } from 'rambda';
 import { MixinCommon } from '../mixins/MixinCommon';
 import { tokenKey } from '../../config';
 
@@ -78,12 +77,13 @@ export default {
       functions: [],
       loaded: true,
       user: {},
+      time: 0,
     };
   },
   methods: {
-    logout() {
+    async logout() {
       console.log('logout');
-      let res = confirm('确认退出登录?');
+      let res = await this.confirm('确认退出登录?');
       if (res) {
         //this.token('');
         localStorage.removeItem(tokenKey);
@@ -94,8 +94,49 @@ export default {
     change(index) {
       this.click = index;
     },
+    recharge() {
+      this.time++;
+      if (this.time > 3) {
+        return this.alert('读卡器程序启动失败，请联系管理员');
+      }
+      const that = this;
+      const childProcess = require('child_process');
+
+      let workerProcess = childProcess.spawn('card.jar', {
+        shell: true,
+      });
+
+      // 打印正常的后台可执行程序输出
+      workerProcess.stdout.on('data', function(data) {
+        console.log('stdout: ' + data);
+        data = '125463';
+        this.cardNo = data;
+      });
+
+      // 打印错误的后台可执行程序输出
+      workerProcess.stderr.on('data', function(data) {
+        console.log('stderr: ' + data);
+      });
+
+      // 退出之后的输出
+      workerProcess.on('close', function(code) {
+        console.log('out code：' + code);
+        that.recharge();
+      });
+      process.on('exit', function() {
+        console.log('process is about to exit');
+        workerProcess.kill();
+      });
+      process.on('kill', function() {
+        console.log('process is about to kill');
+        workerProcess.kill();
+      });
+    },
   },
   async mounted() {
+    if (this.$q.platform.is.electron) {
+      this.recharge();
+    }
     //日期
     this.date = date.formatDate(new Date(), 'YYYY年M月D日 dddd');
 

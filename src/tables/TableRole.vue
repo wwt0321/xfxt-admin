@@ -189,9 +189,9 @@ export default {
       params.append('state', state);
       let res = await http.put(`/role/updateState/${row.id}`, params);
       if (res.res) {
-        alert(`${state == 1 ? '启用' : '禁用'}成功`);
+        this.alert(`${state == 1 ? '启用' : '禁用'}成功`);
       } else {
-        alert(`${state == 1 ? '启用' : '禁用'}失败`);
+        this.alert(`${state == 1 ? '启用' : '禁用'}失败`);
       }
       this.refresh();
     },

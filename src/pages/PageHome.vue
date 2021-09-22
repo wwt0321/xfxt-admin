@@ -192,9 +192,11 @@
   </div>
 </template>
 <script>
+import { MixinCommon } from '../mixins/MixinCommon';
 import { http } from '../utils/luch-request/index.js';
 import { date } from 'quasar';
 export default {
+  mixins: [MixinCommon],
   name: 'PageHome',
   data() {
     return {
@@ -293,46 +295,46 @@ export default {
     async goRecharge() {
       this.loading++;
       let params = new FormData();
-      params.append('amount', this.amount1);
+      params.append('amount', parseFloat(this.amount1).toFixed(2));
       params.append('workNo', this.user.workNo);
       params.append('name', this.user.name);
       params.append('type', parseInt(this.shape));
       const res = await http.post('/account/recharge', params);
       if (res.res) {
         this.timeChange(1);
-        alert(this.shape == 1 ? '充值成功' : '提现成功');
+        this.alert(this.shape == 1 ? '充值成功' : '提现成功');
       } else {
-        alert(this.shape == 1 ? '充值失败' : '提现失败');
+        this.alert(this.shape == 1 ? '充值失败' : '提现失败');
       }
       this.loading--;
     },
     async goSubsidy() {
       this.loading++;
       let params = new FormData();
-      params.append('amount', this.amount2);
+      params.append('amount', parseFloat(this.amount2).toFixed(2));
       params.append('workNo', this.user2.workNo);
       params.append('username', this.user2.name);
       const res = await http.post('/distribute/user', params);
       if (res.res) {
         this.timeChange(1);
-        alert('发放补贴成功');
+        this.alert('发放补贴成功');
       } else {
-        alert('发放补贴失败');
+        this.alert('发放补贴失败');
       }
       this.loading--;
     },
     async goRole() {
       this.loading++;
       let params = new FormData();
-      params.append('amount', this.amount3);
+      params.append('amount', parseFloat(this.amount3).toFixed(2));
       params.append('roleId', this.role.id);
       params.append('roleName', this.role.name);
       const res = await http.post('/distribute/role', params);
       if (res.res) {
         this.timeChange(1);
-        alert('发放补贴成功');
+        this.alert('发放补贴成功');
       } else {
-        alert('发放补贴失败');
+        this.alert('发放补贴失败');
       }
       this.loading--;
     },

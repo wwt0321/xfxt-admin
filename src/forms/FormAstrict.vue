@@ -81,12 +81,16 @@ export default {
     preSave() {},
     async goSubmit() {
       this.loading++;
-      const res = await http.put(`/role/set/${this.edata.id}?limit=${this.edata.limit}&max=${this.edata.max}`);
+      const res = await http.put(
+        `/role/set/${this.edata.id}?limit=${parseFloat(this.edata.limit).toFixed(2)}&max=${parseFloat(
+          this.edata.max,
+        ).toFixed(2)}`,
+      );
       if (res.res) {
         this.$emit('submit', this.edata);
         this.hide();
       } else {
-        alert('设置失败');
+        this.alert('设置失败');
       }
       this.loading--;
     },

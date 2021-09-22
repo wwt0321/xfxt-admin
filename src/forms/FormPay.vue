@@ -79,7 +79,7 @@ export default {
     async goSubmit() {
       this.loading++;
       let params = new FormData();
-      params.append('amount', this.amount);
+      params.append('amount', parseFloat(this.amount).toFixed(2));
       params.append('workNo', this.edata.workNo);
       params.append('name', this.edata.name);
       params.append('type', parseInt(this.shape));
@@ -87,9 +87,9 @@ export default {
       if (res.res) {
         this.$emit('submit', this.edata);
         this.hide();
-        alert(this.shape == 1 ? '充值成功' : '提现成功');
+        this.alert(this.shape == 1 ? '充值成功' : '提现成功');
       } else {
-        alert(this.shape == 1 ? '充值失败' : '提现失败');
+        this.alert(this.shape == 1 ? '充值失败' : '提现失败');
       }
       this.loading--;
     },
